@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 15:42:21 by rasamad           #+#    #+#             */
-/*   Updated: 2024/03/28 15:42:19 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/03/29 15:40:41 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef struct s_lst
 	int				heredoc;
 	char			*delimiter;//**
 	char			*cmd;
-	char			*args;//**
+	char			**args;//**
 	char			**redirection;//**
 	struct s_lst	*next;
 	
@@ -47,6 +47,7 @@ t_lst	*ft_lstlast_minishell(t_lst *lst);
 void	ft_lstadd_back_minishell(t_lst **lst, t_lst *new);
 void	ft_redirection(t_lst *var);
 int		ft_check_access(t_lst *var, char **envp);
+int		ft_fork(t_lst *var, char **envp);
 void	display_error_cmd(t_lst *var);
 void	display_no_such(t_lst *var);
 void	ft_free(t_lst *var);

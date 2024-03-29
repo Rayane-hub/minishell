@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:24:55 by rasamad           #+#    #+#             */
-/*   Updated: 2024/03/26 13:18:13 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/03/29 15:37:47 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,10 @@ int	ft_check_access(t_lst *var, char **envp)
 	{
 		if (access(var->cmd, F_OK) == -1)
 			return (display_no_such(var), -1);
-		else
-			return (printf("command |%s| ok\n", var->cmd), 0);
+		else{
+			var->path_cmd = var->cmd;
+			return (printf("command path |%s| ok\n", var->cmd), 0);
+		}
 	}
 	var->slash_cmd = ft_strjoin("/\0", var->cmd);//ajout du slash au debut de la cmd "/cat"
 	if (!var->slash_cmd)
@@ -46,5 +48,5 @@ int	ft_check_access(t_lst *var, char **envp)
 		if (!var->path_cmd)
 			return (-1);
 	}
-	return (free(var->path_cmd), ft_free(var), printf("command |%s| ok\n", var->cmd), 0);
+	return (ft_free(var), printf("command |%s| ok\n", var->cmd), 0);
 }

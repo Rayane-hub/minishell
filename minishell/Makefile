@@ -4,7 +4,7 @@ CC 			= cc
 
 CFLAGS		= -g3 -Wall -Wextra -Werror
 
-SRC			= main.c dislpay_err.c check_access.c lst_add.c redirection.c
+SRC			= main.c dislpay_err.c check_access.c lst_add.c redirection.c fork.c
 
 OBJ 		= $(SRC:.c=.o)
 
