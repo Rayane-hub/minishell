@@ -6,60 +6,81 @@
 /*   By: rasamad <rasamad@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 18:09:29 by rasamad           #+#    #+#             */
-/*   Updated: 2024/03/28 18:43:37 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/04/04 13:17:55 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_redirection(t_lst *var)
+
+
+void	ft_close(t_lst *elem)
+{
+	if (elem->redirection && elem->fd_infile != -1)//s'il n'y a pas de redirection les elem->fd ne sont pas initaliser
+	{
+		close(elem->fd_infile);
+		elem->fd_infile = -1;
+	}
+	if (elem->redirection && elem->fd_outfile != -1)
+	{
+		close(elem->fd_outfile);
+		elem->fd_outfile = -1;
+	}
+}
+
+
+void	ft_redirection(t_lst *elem)
 {
 	int	i;
 	int	j;
 
-	var->fd_infile = -2;
-	var->fd_outfile = -2;	
+	elem->fd_infile = -1;
+	elem->fd_outfile = -1;	
 	i = 0;
-	while (var->redirection[i])
+	while (elem->redirection[i])
 	{
 		j = 0;
-		while (var->redirection[i][j])
+		while (elem->redirection[i][j])
 		{
-			if (var->redirection[i][j] == '>' && var->redirection[i][j + 1] == '>') // >> 
+			if (elem->redirection[i][j] == '>' && elem->redirection[i][j + 1] == '>') // >> 
 			{
 				j += 2;
-				while (var->redirection[i][j] == ' ')//skip space
+				while (elem->redirection[i][j] == ' ')//skip space
 					j++;
 				//check si je dois close l'ancien en cas de redirection multiple
-				var->fd_outfile = open(var->redirection[i] + j, O_CREAT | O_WRONLY | O_APPEND, 0777);
-				if (var->fd_outfile == -1) {
+				elem->fd_outfile = open(elem->redirection[i] + j, O_CREAT | O_WRONLY | O_APPEND, 0777);
+				if (elem->fd_outfile == -1)
+				{
                     perror("Erreur lors de l'ouverture du fichier de sortie (>>)");
+					ft_close(elem);
                     exit(EXIT_FAILURE);
                 }
 				break;
 			}
-			else if (var->redirection[i][j] == '>')// > 
+			else if (elem->redirection[i][j] == '>')// > 
 			{
 				j++;
-				while (var->redirection[i][j] == ' ')
+				while (elem->redirection[i][j] == ' ')
 					j++;
 				//check si je dois close l'ancien en cas de redirection multiple
-				var->fd_outfile = open(var->redirection[i] + j, O_CREAT | O_WRONLY | O_TRUNC, 0777);
-				if (var->fd_outfile == -1) {
+				elem->fd_outfile = open(elem->redirection[i] + j, O_CREAT | O_WRONLY | O_TRUNC, 0777);
+				if (elem->fd_outfile == -1) {
                     perror("Erreur lors de l'ouverture du fichier de sortie (>)");
+					ft_close(elem);
                     exit(EXIT_FAILURE);
                 }
 				break;
 			}
-			else if (var->redirection[i][j] == '<')// <
+			else if (elem->redirection[i][j] == '<')// <
 			{
 				j++;
-				while (var->redirection[i][j] == ' ')
+				while (elem->redirection[i][j] == ' ')
 					j++;
-				var->fd_infile = open(var->redirection[i] + j, O_RDONLY, 0777);
-				if (var->fd_infile == -1) {
-                    write (2, var->redirection[i] + j, ft_strlen(var->redirection[i] + j));
+				elem->fd_infile = open(elem->redirection[i] + j, O_RDONLY, 0777);
+				if (elem->fd_infile == -1) {
+                    write (2, elem->redirection[i] + j, ft_strlen(elem->redirection[i] + j));
                     perror(" (<)");
+					ft_close(elem);
                     exit(EXIT_FAILURE);
                 }
 				break;
