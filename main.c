@@ -39,7 +39,7 @@ int	main(int ac, char **av, char **envp)
 
 		if (lst->heredoc > 0)		//1. Heredoc check
 			printf("ft_heredoc() a faire\n");
-
+		lst->open = 0;
 		if (lst->redirection)		//2. Redirection check
 			ft_redirection(lst);
 
@@ -53,21 +53,21 @@ int	main(int ac, char **av, char **envp)
 
 		ft_check_access(lst, envp);	//4 Cmd check
 
-		if (i == 1){ 				//5. exec (cmd_first) | cmd_middle... | cmd_last
+		if (i == 1 && lst->open == 0){			//5. exec (cmd_first) | cmd_middle... | cmd_last
 			ft_printf("go exec first cmd\n\n");
 			ft_first_fork(lst, &var, envp);
 			close(var.pipe_fd[1]);// je close lecriture pour pour pas que la lecture attendent indefinement.
 			var.save_pipe = var.pipe_fd[0]; //je save la lecture pour le next car je vais re pipe pour avoir un nouveau canal 
 		}
 
-		else if (i < len_lst){		//6. exec cmd_first | (cmd_middle...) | cmd_last
+		else if (i < len_lst && lst->open == 0){//6. exec cmd_first | (cmd_middle...) | cmd_last
 			ft_printf("go exec middle cmd\n\n");
 			ft_middle_fork(lst, &var, envp);
 			close(var.pipe_fd[1]);
 			var.save_pipe = var.pipe_fd[0];
 		}
 
-		else if (i == len_lst){		//7. exec  exec cmd_first | cmd_middle... | (cmd_last)
+		else if (i == len_lst && lst->open == 0){//7. exec  exec cmd_first | cmd_middle... | (cmd_last)
 			ft_printf("go exec last cmd\n\n");
 			
 			ft_last_fork(lst, &var, envp);
@@ -113,42 +113,43 @@ static void	display_lst(t_lst *elem)
 static void	ft_init_list(t_lst **lst, char **av)//test de ligne de commande (sortie du parsing)
 {
 	t_lst	*first_elem;
-	t_lst	*second_elem;
-	t_lst	*third_elem;
-	t_lst	*fourth_elem;
+	//t_lst	*second_elem;
+	//t_lst	*third_elem;
+	//t_lst	*fourth_elem;
 
 	first_elem = ft_lstnew_minishell();
 	ft_lstadd_back_minishell(lst, first_elem);
 
 	first_elem->heredoc = 0;
 	first_elem->cmd = av[1];
-	
-	first_elem->args = malloc(2 * sizeof(char *));
+
+	first_elem->args = malloc(3 * sizeof(char *));
 	if (!first_elem->args){
 		ft_printf("malloc args failed\n");
 		exit(EXIT_FAILURE);
 	}
 	first_elem->args[0] = av[1];
-	first_elem->args[1] = NULL;
+	first_elem->args[1] = "Makefile";
+	first_elem->args[2] = NULL;
 
-	first_elem->redirection = malloc(2 * sizeof(char *));
+/*	first_elem->redirection = malloc(2 * sizeof(char *));
 	if (!first_elem->redirection){
 		ft_printf("malloc redi failed\n");
 		exit(EXIT_FAILURE);
 	}
-	first_elem->redirection[0] = "< f1";
-//	first_elem->redirection[1] = ">> f11";
-	first_elem->redirection[1] = NULL;
+	first_elem->redirection[0] = "> f1";
+	first_elem->redirection[1] = ">> f11";
+	first_elem->redirection[1] = NULL;*/
+	first_elem->redirection = NULL;
 
-//	first_elem->redirection = NULL;
 	first_elem->next = NULL;
 
 
 /*******************************************************************************************************/
-	
-	second_elem = ft_lstnew_minishell();
+
+	/*second_elem = ft_lstnew_minishell();
 	ft_lstadd_back_minishell(lst, second_elem);
-	
+
 	second_elem->heredoc = 0;
 	second_elem->cmd = av[2];
 	
@@ -160,21 +161,26 @@ static void	ft_init_list(t_lst **lst, char **av)//test de ligne de commande (sor
 	second_elem->args[0] = av[2];
 	second_elem->args[1] = NULL;
 
-/*	second_elem->redirection = malloc(3 * sizeof(char *));
+	second_elem->redirection = malloc(8 * sizeof(char *));
 	if (!second_elem->redirection)
 	{
 		ft_printf("malloc failed\n");
 		exit(EXIT_FAILURE);
 	}
-	second_elem->redirection[0] = ">> f22";
-	second_elem->redirection[1] = ">> f2";
-	second_elem->redirection[2] = NULL;*/
-	second_elem->redirection = NULL;
-	second_elem->next = NULL;
+	second_elem->redirection[0] = "> f3";
+	second_elem->redirection[1] = "> f4";
+	second_elem->redirection[2] = "> f4";
+	second_elem->redirection[3] = "> f4";
+	second_elem->redirection[4] = "> f4";
+	second_elem->redirection[5] = "> f4";
+	second_elem->redirection[6] = "> f4";
+	second_elem->redirection[7] = NULL;
+	//second_elem->redirection = NULL;
+	second_elem->next = NULL;*/
 
 /***********************************************************************************************************************/
 
-	third_elem = ft_lstnew_minishell();
+	/*third_elem = ft_lstnew_minishell();
 	ft_lstadd_back_minishell(lst, third_elem);
 
 	third_elem->heredoc = 0;
@@ -186,21 +192,21 @@ static void	ft_init_list(t_lst **lst, char **av)//test de ligne de commande (sor
 	third_elem->args[2] = NULL;
 	//third_elem->args = NULL;
 
-	/*third_elem->redirection = malloc(2 * sizeof(char *));
+	third_elem->redirection = malloc(2 * sizeof(char *));
 	if (!third_elem->redirection)
 	{
 		ft_printf("malloc failed\n");
 		exit(EXIT_FAILURE);
 	}
 	third_elem->redirection[0] = ">> f3";
-	third_elem->redirection[1] = NULL;*/
+	third_elem->redirection[1] = NULL;
 	third_elem->redirection = NULL;
 
-	third_elem->next = NULL;
+	third_elem->next = NULL;*/
 
 	/**********************************************************************************************************************/
 
-	fourth_elem = ft_lstnew_minishell();
+	/*fourth_elem = ft_lstnew_minishell();
 	ft_lstadd_back_minishell(lst, fourth_elem);
 
 	fourth_elem->heredoc = 0;
@@ -208,18 +214,18 @@ static void	ft_init_list(t_lst **lst, char **av)//test de ligne de commande (sor
 
 	fourth_elem->args = malloc(3 * sizeof(char *));
 	fourth_elem->args[0] = av[4];
-	fourth_elem->args[1] = "-e";
-	fourth_elem->args[2] = NULL;
-	
+	fourth_elem->args[1] = NULL;
+	//fourth_elem->args[2] = NULL;
+
 	fourth_elem->redirection = malloc(2 * sizeof(char *));
 	if (!fourth_elem->redirection)
 	{
 		ft_printf("malloc failed\n");
 		exit(EXIT_FAILURE);
 	}
-	fourth_elem->redirection[0] = "> f4";
+	fourth_elem->redirection[0] = ">       f4";
 	fourth_elem->redirection[1] = NULL;
 	//fourth_elem->redirection = NULL;
 	
-	fourth_elem->next = NULL;
+	fourth_elem->next = NULL;*/
 }

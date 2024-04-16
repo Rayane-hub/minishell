@@ -24,21 +24,20 @@
 
 typedef struct s_lst
 {
-	char			*line;//
 	int				heredoc;
-	char			*delimiter;//**delimiter
+	char			**delimiter;
 	char			*cmd;
 	char			**args;
 	char			**redirection;
 	struct s_lst	*next;
-	
+	//var en plus necessaire a lexec
+	int				open;
 	int				fd_infile;
 	int				fd_outfile;
 	char			**split_path;
 	char			*slash_cmd;
 	char			*path_cmd;
 	int				i;
-	
 }	t_lst;
 
 typedef struct s_struct

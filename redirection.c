@@ -53,7 +53,8 @@ void	ft_redirection(t_lst *elem)
 				{
                     perror("Erreur lors de l'ouverture du fichier de sortie (>>)");
 					ft_close(elem);
-                    exit(EXIT_FAILURE);
+					elem->open = -1; //permet de verifier le fail dun output alors ne pas exec la cmd
+					return;
                 }
 				break;
 			}
@@ -67,7 +68,8 @@ void	ft_redirection(t_lst *elem)
 				if (elem->fd_outfile == -1) {
                     perror("Erreur lors de l'ouverture du fichier de sortie (>)");
 					ft_close(elem);
-                    exit(EXIT_FAILURE);
+					elem->open = -1; //permet de verifier le fail dun output alors ne pas exec la cmd
+					return;
                 }
 				break;
 			}
@@ -81,7 +83,8 @@ void	ft_redirection(t_lst *elem)
                     write (2, elem->redirection[i] + j, ft_strlen(elem->redirection[i] + j));
                     perror(" (<)");
 					ft_close(elem);
-                    exit(EXIT_FAILURE);
+					elem->open = -1; //permet de verifier le fail dun input alors ne pas exec la cmd
+					return;
                 }
 				break;
 			}
