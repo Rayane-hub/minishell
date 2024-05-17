@@ -3,24 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/09 10:03:01 by rasamad           #+#    #+#             */
-/*   Updated: 2023/12/11 13:47:16 by rasamad          ###   ########.fr       */
+/*   Created: 2023/11/09 10:48:48 by jgavairo          #+#    #+#             */
+/*   Updated: 2023/11/21 12:05:47 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strchr(const char *str, int c)
+char	*ft_strchr(const char *s, int c)
 {
-	size_t	i;
+	unsigned char	uc;
 
-	i = 0;
-	while (str[i] != (unsigned char)c && str[i])
-		i++;
-	if (str[i] == (unsigned char)c)
-		return ((char *)str + i);
-	else
-		return (NULL);
+	uc = (unsigned char)c;
+	while (*s)
+	{
+		if (*s == uc)
+			return ((char *)s);
+		s++;
+	}
+	if (uc == '\0')
+		return ((char *)s);
+	return (NULL);
 }

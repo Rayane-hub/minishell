@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/12 18:11:48 by rasamad           #+#    #+#             */
-/*   Updated: 2023/11/21 14:27:23 by rasamad          ###   ########.fr       */
+/*   Created: 2023/11/14 18:45:31 by jgavairo          #+#    #+#             */
+/*   Updated: 2023/11/22 16:18:04 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,26 @@
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	int		len_s1;
-	int		len_s2;
-	int		i;
-	char	*tmp;
+	char	*str;
+	size_t	total_len;
+	size_t	i;
 
-	len_s1 = ft_strlen(s1);
-	len_s2 = ft_strlen(s2);
 	i = 0;
-	tmp = malloc((len_s1 + len_s2 + 1) * sizeof(char));
-	if (!tmp)
+	total_len = ft_strlen(s1) + ft_strlen(s2);
+	str = ft_calloc((total_len + 1), (sizeof(char)));
+	if (!str)
 		return (NULL);
-	while (i < len_s1)
+	while (*s1 != '\0')
 	{
-		tmp[i] = s1[i];
+		str[i] = *s1;
 		i++;
+		s1++;
 	}
-	i = 0;
-	while (i < len_s2)
+	while (*s2 != '\0')
 	{
-		tmp[len_s1 + i] = s2[i];
+		str[i] = *s2;
 		i++;
+		s2++;
 	}
-	tmp[len_s1 + i] = 0;
-	return (tmp);
+	return (str);
 }

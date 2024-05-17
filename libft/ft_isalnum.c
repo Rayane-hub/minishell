@@ -3,18 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   ft_isalnum.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/07 10:07:14 by rasamad           #+#    #+#             */
-/*   Updated: 2023/11/21 14:56:39 by rasamad          ###   ########.fr       */
+/*   Created: 2023/11/06 16:35:55 by jgavairo          #+#    #+#             */
+/*   Updated: 2024/05/16 12:58:39 by gavairon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_isalnum(int c)
+int	ft_isalnum(int c, int choice)
 {
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
-		return (1);
-	else if (c >= '0' && c <= '9')
-		return (1);
+	if (choice == 1)
+	{
+		if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || \
+		(c >= 'A' && c <= 'Z') || c == '?')
+			return (1);
+	}
+	if (choice == 0)
+	{
+		if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || \
+		(c >= 'A' && c <= 'Z'))
+			return (1);
+	}
 	return (0);
 }

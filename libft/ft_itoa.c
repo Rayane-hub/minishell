@@ -3,98 +3,88 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/16 14:40:14 by rasamad           #+#    #+#             */
-/*   Updated: 2023/11/21 14:06:10 by rasamad          ###   ########.fr       */
+/*   Created: 2023/11/17 15:02:09 by jgavairo          #+#    #+#             */
+/*   Updated: 2023/11/17 15:02:09 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static void	ft_rev_tab(char *str, int len)
-{
-	int		i;
-	char	temp;
-
-	i = 0;
-	len--;
-	while (i <= len)
-	{
-		temp = str[i];
-		str[i] = str[len];
-		str[len] = temp;
-		i++;
-		len--;
-	}
-}
-
-static char	*negative(int n, int len)
-{
-	int		unity;
-	int		i;
-	char	*str;
-
-	i = 0;
-	n = n * -1;
-	len++;
-	str = malloc(len + 1 * sizeof(char));
-	if (!str)
-		return (NULL);
-	while (n >= 1)
-	{
-		unity = n % 10;
-		str[i] = unity + '0';
-		i++;
-		n = n / 10;
-	}
-	str[i] = '-';
-	i++;
-	str[i] = 0;
-	ft_rev_tab(str, len);
-	return (str);
-}
-
-static char	*positive(int n, int len)
-{
-	int		i;
-	int		unity;
-	char	*str;
-
-	i = 0;
-	str = malloc((len + 1) * sizeof(char));
-	if (!str)
-		return (NULL);
-	while (n >= 1)
-	{
-		unity = n % 10;
-		str[i] = unity + '0';
-		i++;
-		n = n / 10;
-	}
-	str[i] = 0;
-	ft_rev_tab(str, len);
-	return (str);
-}
+static char			*ft_reverse(char *str);
+static size_t		ft_isnegative(long nbr);
+static size_t		ft_count_number(long nbr);
 
 char	*ft_itoa(int n)
 {
-	int	nb;
-	int	len;
+	size_t	i;
+	size_t	negative;
+	long	nbr;
+	char	*result;
 
-	len = 0;
-	nb = n;
-	if (n == 0)
+	nbr = n;
+	i = 0;
+	negative = 0;
+	if (nbr == 0)
 		return (ft_strdup("0"));
-	if (n == -2147483648)
-		return (ft_strdup("-2147483648"));
-	while (nb <= -1 || nb >= 1)
+	negative = ft_isnegative(nbr);
+	if (negative == 1)
+		nbr *= -1;
+	result = ft_calloc((ft_count_number(nbr) + negative + 1), (sizeof(char)));
+	if (!result)
+		return (NULL);
+	while (nbr != 0)
 	{
-		nb = nb / 10;
-		len++;
+		result[i++] = ((nbr % 10) + '0');
+		nbr /= 10;
 	}
-	if (n < 0)
-		return (negative(n, len));
-	else
-		return (positive(n, len));
+	if (negative == 1)
+		result[i] = '-';
+	ft_reverse(result);
+	return (result);
+}
+
+static size_t	ft_isnegative(long nbr)
+{
+	int	negative;
+
+	negative = 0;
+	if (nbr < 0)
+	{
+		negative = 1;
+	}
+	return (negative);
+}
+
+static size_t	ft_count_number(long nbr)
+{
+	size_t	i;
+
+	i = 0;
+	while (nbr != 0)
+	{
+		nbr /= 10;
+		i++;
+	}
+	return (i);
+}
+
+static char	*ft_reverse(char *str)
+{
+	size_t		i;
+	size_t		len;
+	char		tmp;
+
+	i = 0;
+	len = (ft_strlen(str) - 1);
+	while (i < len)
+	{
+		tmp = str[i];
+		str[i] = str[len];
+		str[len] = tmp;
+		i++;
+		len--;
+	}
+	return (str);
 }
