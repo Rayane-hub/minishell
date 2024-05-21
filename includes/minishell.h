@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:07:18 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/17 14:49:11 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/21 17:58:04 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ typedef struct s_cmd
 	int				expand_heredoc;
 	int				end_heredoc;
 	int				fd_str_rand;
+	int				del_one;
 	char			**heredoc_content;
 	char			**delimiter;
 	char			**redirecter;
@@ -144,7 +145,9 @@ int		heredoc_copyer(char *pipes, t_cmd **cmd, int i, int del);
 int		heredoc_checker(char *pipes, t_cmd **cmd);
 void	free_pipes(char **pipes);
 void	command_positiver(char *pipes);
-void	env_cmd(t_env *env);
+int		ft_builtins_env(t_data *data, int i);
+void	env_cmd(t_data *data);
+void	ft_unset(t_env **mini_env, t_cmd *cmd);
 char	*ft_getenv(char *name, t_env *mini_env);
 char	*line_extractor(t_env *mini_env);
 int		ft_envsize(t_env *mini_env);
@@ -174,6 +177,7 @@ void	ft_envadd_back(t_env **env, t_env *new);
 int		ft_export(t_data *data, t_env **mini_env, t_cmd *cmd);
 char	**ft_list_to_tab_cote(t_env *mini_env);
 int		ft_isspace(char c);
+int		ft_cd(t_data *data);
 void	exit_status_n_free(t_data *data, int code, char *message);
 
 #endif

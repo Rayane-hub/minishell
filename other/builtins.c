@@ -3,20 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 15:32:01 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/17 14:00:36 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/05/21 17:36:55 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	env_cmd(t_env *env)
+void	env_cmd(t_data *data)
 {
+	t_cmd	*lst = data->cmd;
 	t_env	*mini_env;
 
-	mini_env = env;
+	printf("my env\n");
+	mini_env = data->mini_env;
 	while (mini_env)
 	{
 		if (mini_env->value)
@@ -112,7 +114,7 @@ int	ft_export_display(t_env *mini_env)
 		return (-1);
 	sort_env(&tab);
 	while(tab[i])
-		printf("declare -x %s\n", tab[i++]);
+		printf("declare -j %s\n", tab[i++]);
 	free_pipes(tab);
 	return (0);
 }
@@ -162,9 +164,12 @@ int	ft_export(t_data *data, t_env **mini_env, t_cmd *cmd)
 int	ft_builtins(t_cmd *lst)
 {
 	int		i;
+	int		j;
 	char	*cwd;
+	int i_print;
 
 	i = 1;
+	i_print = 1;
 	if (ft_strcmp(lst->args[0], "pwd") == 0)
 	{
 		cwd = getcwd(NULL, 0);
@@ -180,14 +185,24 @@ int	ft_builtins(t_cmd *lst)
 	else if (ft_strcmp(lst->args[0], "echo") == 0)
 	{
 		while (lst->args[i] && ft_strncmp(lst->args[i], "-n", 2) == 0)
+		{
+			j = 1;
+			while (lst->args[i][j] == 'n')
+				j++;
+			if (lst->args[i][j] == '\0')
+				i_print++;
+			else
+				break;
 			i++;
-		while (lst->args[i])
+		}
+		i = i_print;
+		while (lst->args[i])//affichage
 		{
 			printf("%s", lst->args[i]);
 			if (lst->args[++i])
 				printf(" ");// Ajoute un espace entre les arguments
 		}
-		if (lst->args[1] && ft_strncmp(lst->args[1], "-n", 2) != 0)
+		if (i_print == 1)
 			printf("\n");
 		else if (!lst->args[1])
 			printf("\n");

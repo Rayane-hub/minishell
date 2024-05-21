@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 15:49:33 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/17 15:57:23 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/20 13:59:05 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,24 +103,35 @@ int ft_heredoc(t_data *data)
 
 	lst = data->cmd;
     lst->heredoc_content = NULL;
+	lst->del_one = 0;
 	while (lst)
 	{
 		while (i < lst->nb_del && lst->heredoc == true) 
 		{
 			line = readline(">");
-			while (ft_strcmp(line, lst->delimiter[i]) != 0)
+			if (ft_strcmp(line, lst->delimiter[i]) == 0)
 			{
-				if (lst->expand_heredoc == 1)
-					line = dolls_expander(line, data->mini_env, data);
-				lst->heredoc_content = ft_realloc(line, lst);
-				free(line);  // Libère la mémoire allouée par readline
-				if (!lst->heredoc_content)
-					return(ft_free_all_heredoc(data), exit_status(data, 1, "Malloc error from [ft_heredoc]\n"), -1);
-				line = readline(">");
+				free(line);
+				lst->heredoc_content = malloc(1 * sizeof(char *));
+				lst->heredoc_content[0] = NULL;
+				lst->del_one = 1;
 			}
-			free(line);  // Libère la mémoire allouée par readline	
+			else
+			{
+				lst->del_one = 0;
+				while (ft_strcmp(line, lst->delimiter[i]) != 0)
+				{
+					if (lst->expand_heredoc == 1)
+						line = dolls_expander(line, data->mini_env, data);
+					lst->heredoc_content = ft_realloc(line, lst);
+					free(line);  // Libère la mémoire allouée par readline
+					if (!lst->heredoc_content)
+						return(exit_status(data, 1, "Malloc error from [ft_heredoc]\n"), -1);
+					line = readline(">");
+				}
+				free(line);  // Libère la mémoire allouée par readline	
+			}
 			i++;
-			
 			if (i  < lst->nb_del)
 				ft_free_heredoc(data);
 		}

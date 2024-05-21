@@ -8,7 +8,6 @@ cas des '/' qui devrait renvoyer is a directory
 
 syntaxe error &, (), 
 
-Echo cas 89 a Gerer
 
 Tests <= 100 : OK
 
@@ -26,3 +25,16 @@ cat <<lol""
 	n'expand pas
 
 si variable entre cote, la value devient un seul arguments
+
+/***********************************************************************************/
+
+$HOME
+bash: /home/rasamad: Is a directory
+stat()
+
+ctrl c, d, \
+
+pipe builtins env
+
+$EMPTY | ls
+cmd (null) | ls (doit etre fait)
