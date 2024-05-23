@@ -6,7 +6,7 @@
 /*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:31:40 by gavairon          #+#    #+#             */
-/*   Updated: 2024/05/16 01:50:10 by gavairon         ###   ########.fr       */
+/*   Updated: 2024/05/23 14:16:52 by gavairon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@ int	prompt_customer(t_data *data)
 	data->var.pwd = getcwd(NULL, 0);
 	if (data->var.pwd == NULL)
 		return (exit_status(data, 1, "\033[31mError from [getcwd]\n\033[0m"), -1);
-	printf ("\033[90m%s\033[0m", data->var.pwd);
-	data->var.rl = readline("\e[33m$> \e[37m");
+	data->var.rl = readline(ft_strjoin(data->var.pwd, "\001\e[33m\002$> \001\e[37m\002"));
 	if (data->var.rl == NULL)
 		return (exit_status(data, 1, "\033[31mError from [readline]\n\033[0m"), -1);
 	if (data->var.rl[0])
@@ -39,8 +38,12 @@ int	parser(t_data *data)
 {
 	negative_checker(data->var.rl);
 	data->var.rl = dolls_expander(data->var.rl, data->mini_env, data);
-	if (!data->var.rl)
+	if (!data->var.rl && data->ambigous == 0)
 		return (exit_status(data, 1, "\033[31mMalloc error from [dolls_expander]\n\033[0m"), -1);
+	if (!data->var.rl && data->ambigous == 1)
+		return (exit_status(data, 1, "ambigous redirect\n"), -1);
+	if (!data->var.rl[0])
+		return (-1);
 	data->var.pipes = ft_split(data->var.rl, '|');
 	if (!data->var.pipes)
 		return (exit_status(data, 1, "\033[31mMalloc error from [ft_split]\n\033[0m"), -1);

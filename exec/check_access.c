@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_access.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:24:55 by rasamad           #+#    #+#             */
-/*   Updated: 2024/05/21 15:59:10 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/23 14:21:43 by gavairon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,7 @@ int	ft_check_access(t_data *data)
 		if (access(lst->args[0], F_OK) == -1)
 			return (display_no_such(lst), -1);
 		else
-		{
-			lst->path_cmd = lst->args[0];
-			return (printf("command path |%s| ok\n", lst->args[0]), 0);
-		}
+			return (lst->path_cmd = lst->args[0], 0);
 	}
 	lst->slash_cmd = ft_strjoin("/\0", lst->args[0]);//ajout du slash au debut de la args[0] "/cat"
 	if (!lst->slash_cmd)

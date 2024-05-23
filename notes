@@ -1,40 +1,56 @@
-tri douteux sur export (exemple: lol, loll, lol2, lol3)
 
-probleme en cas de | avec un builtin en premiere, (exemple "env | grep TERM")
+--------	[211] /!\ SIGNAUX----------------------------------------- 223
 
-probleme valgrind en cas de "export" apres avoir creer une nouvelle variable
+RAYANE--	probleme en cas de pipe avec un builtin en premiere, (exemple "env | grep TERM")
 
-cas des '/' qui devrait renvoyer is a directory
+RAYANE--	cas des '/' qui devrait renvoyer is a directory
 
-syntaxe error &, (), 
+RAYANE--	[205] ($HOME) Its a directory - attendu 
 
+RAYANE--	Echo [89] a Gerer
 
-Tests <= 100 : OK
+RAYANE--	[237] export | grep je crois que le builtin nentre pas dans les forks
 
-backslash a gerer? exemple (\$HOME = $HOME)?
+RAYANE--	[334] de unset PATH, ensuite ls, segfault au lieu de No such file or directory
 
-cas 129 a verifier (echo $hola*) maffiche * doit il rien afficher?
+RAYANE--	[>382] ex: /bin/echo = command path ok au lieu dexec
 
-cas 150 echo $"" affiche $ au lieu de \n pourquoi? echo $ est sense affihcher $
-	echo $"HOME" maffiche $HOME au lieu de HOME
-	echo $''HOME maffiche $HOME au lieu de HOME
+RAYANE--	[392] pwd -p = invalid option
+	{
+		PDF 399 -- 640 a faire
+		(avant full test cd, exit ou builtin avec pipe donc a tester)
+	}
 
-	Si $ avant cotes, dollar disparait
+RAYANE--	[679]	> ">pwd" doit creer le fichier pwd 
 
-cat <<lol""
-	n'expand pas
+RAYANE--	[680]	> "< pwd" ne fait rien - resultat attendu : "bash: pwd: No such file or directory"
 
-si variable entre cote, la value devient un seul arguments
+RAYANE--	[692]	> ">>hola" doit creer le fichier hola 
 
-/***********************************************************************************/
+RAYANE--	[706]	> ">srcs/bonjour >srcs/hello <prout" ne fait rien - resultat attemdu : "bash: prout: No such file or directory"
 
-$HOME
-bash: /home/rasamad: Is a directory
-stat()
+RAYANE--	[755]	> SEGFAULT avec cat <<hd <<hd <<hd (>1 heredeoc)
 
-ctrl c, d, \
+JORDAN--	tri douteux sur export (exemple: lol, loll, lol2, lol3)
 
-pipe builtins env
+JORDAN--	[296] export HOLA="'" quand je echo $HOLA -> la "'" est supprimee
 
-$EMPTY | ls
-cmd (null) | ls (doit etre fait)
+JORDAN--	[761]	> "echo hola <<< bonjour" est sense fonctionner - resultat attendu : "hola"
+
+																	SI DOUTES, CONFIRMER AVEC LE VRAI BASH |||||||||||||||||||||||||||||
+
+>>>>>>>>>>>>>>>>>>>>>>			NORMINETTE			<<<<<<<<<<<<<<<<<<<<<<<<
+
+other
+|___ builtins.c -NORMED
+|___ env.c		-NORMED
+|___ lst_add.c	-NORMED
+|___ other.c	-NORMED
+
+ALL NORMED_____________
+
+parsing
+|___ commands_stocker.c	-NORMED
+|___ utilities.c		-NORMED
+|___ utilities_nd.c		-NORMED
+|___ syntaxe_errors.c	-NORMED

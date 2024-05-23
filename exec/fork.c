@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fork.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 15:12:43 by rasamad           #+#    #+#             */
-/*   Updated: 2024/05/21 18:07:50 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/23 14:10:35 by gavairon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,12 +46,12 @@ int	ft_builtins_env_fork(t_data *data)
 	}
 	else if (ft_strcmp(data->cmd->args[0], "unset") == 0)
 	{
-		ft_unset(&data->mini_env, data->cmd);
+		ft_unset(&data);
 		return (1);
 	}
 	else if (ft_strcmp(data->cmd->args[0], "env") == 0)
 	{
-		env_cmd(data);
+		env_cmd(data->mini_env);
 		return (1);
 	}
 	else if (ft_strcmp(data->cmd->args[0], "cd") == 0)

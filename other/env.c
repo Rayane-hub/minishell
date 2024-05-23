@@ -6,11 +6,31 @@
 /*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 15:39:44 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/16 01:28:12 by gavairon         ###   ########.fr       */
+/*   Updated: 2024/05/23 00:28:40 by gavairon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+int	check_len(t_env *mini_env, int choice)
+{
+	int	len;
+	if (choice == 1)
+	{
+		if (mini_env->value)
+			len = (ft_strlen(mini_env->name) + ft_strlen(mini_env->value) + 2);
+		else
+			len = (ft_strlen(mini_env->name) + 2);
+	}
+	if (choice == 2)
+	{
+		if (mini_env->value)
+			len = (ft_strlen(mini_env->name) + ft_strlen(mini_env->value) + 4);
+		else
+			len = (ft_strlen(mini_env->name) + 4);
+	}
+	return (len);
+}
 
 char	*line_extractor(t_env *mini_env)
 {
@@ -19,12 +39,7 @@ char	*line_extractor(t_env *mini_env)
 	int		i;
 
 	i = 0;
-	len = 0;
-	line = NULL;
-	if (mini_env->value)
-		len = (ft_strlen(mini_env->name) + ft_strlen(mini_env->value) + 2);
-	else
-		len = (ft_strlen(mini_env->name) + 2);
+	len = check_len(mini_env, 1);
 	line = malloc(sizeof(char) * len);
 	if (!line)
 		return (NULL);
@@ -46,17 +61,16 @@ char	*line_extractor(t_env *mini_env)
 
 int	ft_envsize(t_env *mini_env)
 {
-	t_env	*start;
+	t_env	*tmp;
 	int		i;
 
-	start = mini_env;
+	tmp = mini_env;
 	i = 0;
-	while (mini_env)
+	while (tmp)
 	{
 		i++;
-		mini_env = mini_env->next;
+		tmp = tmp->next;
 	}
-	mini_env = start;
 	return (i);
 }
 
@@ -71,14 +85,17 @@ char	**ft_list_to_tab(t_env *mini_env)
 	tab = NULL;
 	tmp = mini_env;
 	len = ft_envsize(mini_env);
-	tab = ft_calloc(len, sizeof(char *) + 1);
+	tab = ft_calloc(len + 1, sizeof(char *));
+	//verif malloc
 	if (!tab)
 		return (NULL);
 	while (tmp)
 	{
 		tab[i++] = line_extractor(tmp);
+		//verif malloc
 		tmp = tmp->next;
 	}
+	tab[i] = NULL;
 	return (tab);
 }
 
@@ -89,12 +106,7 @@ char	*line_extractor_cote(t_env *mini_env)
 	int		i;
 
 	i = 0;
-	len = 0;
-	line = NULL;
-	if (mini_env->value)
-		len = (ft_strlen(mini_env->name) + ft_strlen(mini_env->value) + 4);
-	else
-		len = (ft_strlen(mini_env->name) + 4);
+	len = check_len(mini_env, 2);
 	line = malloc(sizeof(char) * len);
 	if (!line)
 		return (NULL);

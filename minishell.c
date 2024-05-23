@@ -6,47 +6,82 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 11:02:31 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/21 17:52:29 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/23 17:44:20 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/minishell.h"
 
-void	ft_unset(t_env **mini_env, t_cmd *cmd)
+void	ft_unset(t_data **data)
 {
 	t_env	*tmp;
 	t_env	*swap;
 	int		i;
 
 	i = 1;
-	tmp = (*mini_env);
-	while (cmd->args[i])
+	tmp = (*data)->mini_env;
+	while ((*data)->cmd->args[i])
 	{
-		while (tmp->next && ft_strcmp(tmp->next->name, cmd->args[i]) != 0)
-			tmp = tmp->next;
-		if (tmp && ft_strcmp(tmp->next->name, cmd->args[i]) == 0)
+		if (spec_export((*data)->cmd->args[i]) == 0)
 		{
-			swap = tmp->next;
-			tmp->next = tmp->next->next;
-			free(swap->name);
-			free(swap->value);
-			free(swap);
+			while (tmp->next && ft_strcmp(tmp->next->name, (*data)->cmd->args[i]) != 0)
+				tmp = tmp->next;
+			if (tmp && tmp->next && ft_strcmp(tmp->next->name, (*data)->cmd->args[i]) == 0)
+			{
+				swap = tmp->next;
+				tmp->next = tmp->next->next;
+				free(swap->name);
+				free(swap->value);
+				free(swap);
+			}
+		}
+		else
+		{
+			exit_status_n_free((*data), 1, "unset: not a valid identifier: ");
+			write(2, (*data)->cmd->args[i], ft_strlen((*data)->cmd->args[i]));
+			write(2,"\n", 1);
 		}
 		i++;
 	}
-	
 }
 
 int	ft_cd(t_data *data)
 {
-	char *old_pwd;
+	char	*old_pwd;
+	int		i;
 
+	i = 0;
 	old_pwd = getcwd(NULL, 0);
-	if (chdir(data->cmd->args[1]) == -1)
+	if (data->cmd->args[1] && ft_strcmp(data->cmd->args[1], "-") == 0)
+	{
+		while (data->var.mini_env[i] && ft_strncmp(data->var.mini_env[i], "OLDPWD=", 7) != 0)
+			i++;
+		if (!data->var.mini_env[i])
+			return (display_error_cmd(data->cmd), -1);
+		if (chdir(ft_strchr(data->var.mini_env[i], '/')) == -1)
+		{
+			perror("chdir OLDPWD failed ");
+			return (-1);
+		}
+	}
+	else if (!data->cmd->args[1])
+	{
+		while (data->var.mini_env[i] && ft_strncmp(data->var.mini_env[i], "HOME=", 5) != 0)
+			i++;
+		if (!data->var.mini_env[i])
+			return (display_error_cmd(data->cmd), -1);
+		if (chdir(ft_strchr(data->var.mini_env[i], '/')) == -1)
+		{
+			perror("chdir home failed ");
+			return (-1);
+		}
+	}
+	else if (chdir(data->cmd->args[1]) == -1)
 	{
 		perror("chdir failed ");
 		return (-1);
 	}
+	check_variable(&data->mini_env, "OLDPWD", old_pwd);
 	return (0);
 }
 
@@ -63,6 +98,8 @@ int	ft_is_builtins_no_access(t_data *data)
 	return (0);
 }
 
+
+
 int	ft_builtins_env(t_data *data, int i)
 {
 	if (ft_strcmp(data->cmd->args[0], "export") == 0 && i == 1 && !data->cmd->next)
@@ -72,12 +109,12 @@ int	ft_builtins_env(t_data *data, int i)
 	}
 	else if (ft_strcmp(data->cmd->args[0], "unset") == 0  && i == 1 && !data->cmd->next)
 	{
-		ft_unset(&data->mini_env, data->cmd);
+		ft_unset(&data);
 		return (1);
 	}
 	else if (ft_strcmp(data->cmd->args[0], "env") == 0 && i == 1 && !data->cmd->next)
 	{
-		env_cmd(data);
+		env_cmd(data->mini_env);
 		return (1);
 	}
 	else if (ft_strcmp(data->cmd->args[0], "cd") == 0 && i == 1 && !data->cmd->next)
@@ -94,7 +131,8 @@ int	launch_exec(t_data *data)
 	t_data	*begin;
 
 	// Check if the command is "exit" and handle it before anything else
-	if (data->cmd && data->cmd->next == NULL && ft_strcmp(data->cmd->args[0], "exit") == 0)
+	
+	if (data->cmd->args[0] && data->cmd->next == NULL && ft_strcmp(data->cmd->args[0], "exit") == 0)
 	{
 		// Optionally handle arguments to exit (like exit status)
 		int exit_status = 0;
@@ -112,21 +150,21 @@ int	launch_exec(t_data *data)
 	int len_lst = ft_lstlen(data->cmd);
 	if (ft_heredoc(data) == -1 || !data->cmd->args[0])
 		return (ft_free_all_heredoc(begin), -1);
-	//ft_display_heredoc(data->cmd);	
+	//ft_display_heredoc(data->cmd);
 	while (data->cmd)
 	{
 		data->exit_code = 0;
 		i++;
 		if (data->cmd->redirecter)	//2. redirecter check
-		ft_redirecter(data);
+			ft_redirecter(data);
 		if (data->cmd->next != NULL)		//3. Pipe check ne peut etre fait si 3 ou plus de cmd car il va refaire un pipe et erase lancien alors aue pour 2 cmd il fait qun pipe
 			if (pipe(data->pipe_fd) == -1)
 				exit_status(data, 1, "pipe failed\n");
 
 
 		int check_access = ft_is_builtins_no_access(data);
-		if (ft_builtins_env(data, i) == 0)//cas ou la partie suivante ne doit pas etre faite, heredoc sans cmd, builtings
-		{
+		if (ft_builtins_env(data, i) == 0)
+		{//cas ou la partie suivante ne doit pas etre faite, heredoc sans cmd, builtings
 			if (check_access == 0)
 			{
 				check_access = ft_check_access(data);
@@ -166,10 +204,32 @@ int	launch_exec(t_data *data)
 	return (0);
 }
 
+#include <signal.h>
+
+void handle_sigint(int sig) {
+    (void)sig;              // Pour éviter les avertissements de variable non utilisée
+    write(STDOUT_FILENO, "\n", 1);
+	rl_replace_line("", 0); // Effacer la ligne actuelle
+    rl_on_new_line();       // Repositionner le curseur sur une nouvelle ligne
+    rl_redisplay();         // Redisplay le prompt
+}
+
+void setup_signal_handlers() {
+    struct sigaction sa;
+
+    // Configurer le gestionnaire pour SIGINT (Ctrl+C)
+    sa.sa_handler = handle_sigint;   // Définir la fonction de gestion pour SIGINT
+    sigemptyset(&sa.sa_mask);        // Ne bloquer aucun signal pendant l'exécution de handle_sigint
+    sa.sa_flags = SA_RESTART;        // Réessayer les appels interrompus
+    sigaction(SIGINT, &sa, NULL);    // Appliquer cette action pour SIGINT
+}
+
+
 int	main(int argc, char **argv, char **envp)
 {
 	int		i;
 	t_data	data;
+
 
 	(void)argc;
 	(void)argv;
@@ -177,6 +237,7 @@ int	main(int argc, char **argv, char **envp)
 	data.exit_code = 0;
 	if (minishell_starter(envp, &data) == -1)
 		return (printf("Malloc error\n"), -1);
+	setup_signal_handlers();
 	while (1)
 	{
 		if (prompt_customer(&data) == 0)

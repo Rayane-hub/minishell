@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 15:49:33 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/20 13:59:05 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/23 14:06:09 by gavairon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ char	**ft_realloc(char *rl, t_cmd *lst)
 	if (!tab)
 		return (NULL);
 	tab[i + 1] = NULL;
-	free(lst->heredoc_content);
 	return (tab);
 }
 

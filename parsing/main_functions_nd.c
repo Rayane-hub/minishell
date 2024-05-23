@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_functions_nd.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:22:23 by gavairon          #+#    #+#             */
-/*   Updated: 2024/05/17 11:35:32 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/05/22 23:51:27 by gavairon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,13 @@ void	data_initializer(t_data *data)
 	(*data).var.input = NULL;
 	(*data).var.rl = NULL;
 	(*data).mini_env = NULL;
+	(*data).var.mini_env = NULL;
 	(*data).var.input_copy = NULL;
 	(*data).var.input = NULL;
 	(*data).cmd = NULL;
+	data->pipe_fd[0] = -1;
+	data->pipe_fd[1] = -1;
+	data->ambigous = 0;
 }
 
 int redirecter_finisher(t_data *data)
@@ -99,7 +103,7 @@ int	final_parse(t_data *data)
 	i = 0;
 	if (data->cmd->nb_del > 0)
 	{
-		while (data->cmd->delimiter[i])
+		while (i < data->cmd->nb_del)
 			command_positiver(data->cmd->delimiter[i++]);	
 	}
 	i = 0;
