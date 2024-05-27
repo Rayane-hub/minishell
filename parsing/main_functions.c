@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_functions.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:31:40 by gavairon          #+#    #+#             */
-/*   Updated: 2024/05/23 14:16:52 by gavairon         ###   ########.fr       */
+/*   Updated: 2024/05/24 14:26:47 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	prompt_customer(t_data *data)
 		return (exit_status(data, 1, "\033[31mError from [getcwd]\n\033[0m"), -1);
 	data->var.rl = readline(ft_strjoin(data->var.pwd, "\001\e[33m\002$> \001\e[37m\002"));
 	if (data->var.rl == NULL)
-		return (exit_status(data, 1, "\033[31mError from [readline]\n\033[0m"), -1);
+		return (exit_status(data, 1, "exit\n"), -1);
 	if (data->var.rl[0])
 		add_history(data->var.rl);
 	return (0);

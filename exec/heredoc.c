@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 15:49:33 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/23 14:06:09 by gavairon         ###   ########.fr       */
+/*   Updated: 2024/05/27 12:39:17 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,11 +103,17 @@ int ft_heredoc(t_data *data)
 	lst = data->cmd;
     lst->heredoc_content = NULL;
 	lst->del_one = 0;
+
 	while (lst)
 	{
 		while (i < lst->nb_del && lst->heredoc == true) 
 		{
 			line = readline(">");
+			if (line == NULL)
+			{
+				printf("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", lst->delimiter[i]);
+				line = ft_strdup(lst->delimiter[i]);
+			}
 			if (ft_strcmp(line, lst->delimiter[i]) == 0)
 			{
 				free(line);
@@ -127,6 +133,11 @@ int ft_heredoc(t_data *data)
 					if (!lst->heredoc_content)
 						return(exit_status(data, 1, "Malloc error from [ft_heredoc]\n"), -1);
 					line = readline(">");
+					if (line == NULL)
+					{
+						printf("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", lst->delimiter[i]);
+						line = ft_strdup(lst->delimiter[i]);
+					}	
 				}
 				free(line);  // Libère la mémoire allouée par readline	
 			}

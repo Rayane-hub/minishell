@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 15:32:01 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/23 00:14:47 by gavairon         ###   ########.fr       */
+/*   Updated: 2024/05/27 18:48:13 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int ft_copy_env(t_env **copy, t_env *mini_env)
 	return (0);
 }
 
-int swap_sort_env(char ***tab, int i, int p)
+int swap_sort_env(char ***tab, int i)
 {
 	char	*tmp;
 
@@ -84,13 +84,13 @@ void	sort_env(char ***tab)
 	{
 		p = 0;
 		if ((*tab)[i][p] > (*tab)[i + 1][p])
-			i = swap_sort_env(tab, i, p);
+			i = swap_sort_env(tab, i);
 		else if ((*tab)[i][p] == (*tab)[i + 1][p])
 		{
 			while ((*tab)[i][p] && (*tab)[i + 1][p] && (*tab)[i][p] == (*tab)[i + 1][p])
 				p++;
 			if ((*tab)[i][p] > (*tab)[i + 1][p])
-				i = swap_sort_env(tab, i, p);
+				i = swap_sort_env(tab, i);
 			else
 				i++;
 		}
@@ -233,39 +233,51 @@ int	ft_pwd(void)
 	return (0);
 }
 
-void	ft_echo(t_cmd *lst)
-{
-	int	i;
-
-	i = 1;
-	while (lst->args[i] && ft_strncmp(lst->args[i], "-n", 2) == 0)
-		i++;
-	while (lst->args[i])
-	{
-		printf("%s", lst->args[i]);
-		if (lst->args[++i])
-			printf(" ");// Ajoute un espace entre les arguments
-	}
-	if (lst->args[1] && ft_strncmp(lst->args[1], "-n", 2) != 0)
-		printf("\n");
-	else if (!lst->args[1])
-		printf("\n");
-}
-
 int	ft_builtins(t_cmd *lst)
 {
+	int		i;
+	int		j;
+	char	*cwd;
+	int i_print;
+
+	i = 1;
+	i_print = 1;
 	if (ft_strcmp(lst->args[0], "pwd") == 0)
 	{
-		if (ft_pwd() == -1)
+		cwd = getcwd(NULL, 0);
+		if (!cwd)
 		{
 			perror("getcwd");
 			exit(EXIT_FAILURE);
 		}
+		printf("%s\n", cwd);
+		free(cwd);
 		return (1);
 	}
 	else if (ft_strcmp(lst->args[0], "echo") == 0)
 	{
-		ft_echo(lst);
+		while (lst->args[i] && ft_strncmp(lst->args[i], "-n", 2) == 0)
+		{
+			j = 1;
+			while (lst->args[i][j] == 'n')
+				j++;
+			if (lst->args[i][j] == '\0')
+				i_print++;
+			else
+				break;
+			i++;
+		}
+		i = i_print;
+		while (lst->args[i])//affichage
+		{
+			printf("%s", lst->args[i]);
+			if (lst->args[++i])
+				printf(" ");// Ajoute un espace entre les arguments
+		}
+		if (i_print == 1)
+			printf("\n");
+		else if (!lst->args[1])
+			printf("\n");
 		return (1);
 	}
 	return (0);

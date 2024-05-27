@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:07:18 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/23 16:41:17 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/27 17:55:13 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@
 # include <errno.h>
 # include <sys/wait.h>
 # include <stdbool.h>
-
+# include <signal.h>
+# include <sys/stat.h>
 
 typedef struct s_expand
 {
@@ -99,6 +100,7 @@ typedef struct s_data
 }			t_data;
 
 t_cmd	*ft_lstnew_minishell(void);
+void	handle_sigint(int sig);
 t_cmd	*ft_lstlast_minishell(t_cmd *lst);
 void    ft_lstadd_back_minishell(t_cmd **lst, t_cmd *new);
 int		ft_lstlen(t_cmd *elem);
@@ -179,9 +181,11 @@ char	**ft_list_to_tab_cote(t_env *mini_env);
 int		ft_isspace(char c);
 void	exit_status_n_free(t_data *data, int code, char *message);
 int		spec_export(char *cmd);
+void	display_is_dir(t_cmd *lst);
 void	ft_unset(t_data **data);
 int		ft_cd(t_data *data);
 int		check_variable(t_env **mini_env, char *name, char *value);
+void	ft_exit_prog(t_data *data);
 void	ft_free_heredoc(t_data *data);
 void	ft_free_all_heredoc(t_data *data);
 

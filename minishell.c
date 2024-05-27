@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 11:02:31 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/23 17:44:20 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/27 18:35:38 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,6 @@ int	ft_is_builtins_no_access(t_data *data)
 	return (0);
 }
 
-
-
 int	ft_builtins_env(t_data *data, int i)
 {
 	if (ft_strcmp(data->cmd->args[0], "export") == 0 && i == 1 && !data->cmd->next)
@@ -125,22 +123,36 @@ int	ft_builtins_env(t_data *data, int i)
 	return (0);
 }
 
+void	ft_exit_prog(t_data *data)
+{
+	int exit_status = 0;
+	if (data->cmd->args[1])
+		exit_status = ft_atoi(data->cmd->args[1]); // Convert argument to exit status
+	//ft_free_data(data); // Free any allocated memory
+	exit(exit_status); // Exit the shell with the given status
+}
+
+void	ft_stat_check(int check_access, t_data *data)
+{
+	struct stat statbuf;
+	if (check_access == 0){
+		stat(data->cmd->path_cmd, &statbuf);
+		if (S_ISDIR(statbuf.st_mode))
+		{
+			exit_status(data, 126, "");
+			display_is_dir(data->cmd);
+		}
+	}
+}
+
 int	launch_exec(t_data *data)
 {
 	int		i;
 	t_data	*begin;
 
 	// Check if the command is "exit" and handle it before anything else
-	
 	if (data->cmd->args[0] && data->cmd->next == NULL && ft_strcmp(data->cmd->args[0], "exit") == 0)
-	{
-		// Optionally handle arguments to exit (like exit status)
-		int exit_status = 0;
-		if (data->cmd->args[1])
-			exit_status = ft_atoi(data->cmd->args[1]); // Convert argument to exit status
-		//ft_free_data(data); // Free any allocated memory
-		exit(exit_status); // Exit the shell with the given status
-	}
+		ft_exit_prog(data);
 	begin = data;
 	data->var.mini_env = ft_list_to_tab(data->mini_env);
 	if (!data->var.mini_env)
@@ -148,7 +160,7 @@ int	launch_exec(t_data *data)
 	data->save_pipe = 0;
 	i = 0;
 	int len_lst = ft_lstlen(data->cmd);
-	if (ft_heredoc(data) == -1 || !data->cmd->args[0])
+	if (ft_heredoc(data) == -1)
 		return (ft_free_all_heredoc(begin), -1);
 	//ft_display_heredoc(data->cmd);
 	while (data->cmd)
@@ -160,19 +172,12 @@ int	launch_exec(t_data *data)
 		if (data->cmd->next != NULL)		//3. Pipe check ne peut etre fait si 3 ou plus de cmd car il va refaire un pipe et erase lancien alors aue pour 2 cmd il fait qun pipe
 			if (pipe(data->pipe_fd) == -1)
 				exit_status(data, 1, "pipe failed\n");
-
-
-		int check_access = ft_is_builtins_no_access(data);
-		if (ft_builtins_env(data, i) == 0)
-		{//cas ou la partie suivante ne doit pas etre faite, heredoc sans cmd, builtings
-			if (check_access == 0)
-			{
-				check_access = ft_check_access(data);
-				if (check_access == -1)  //4 Cmd check
-					exit_status(data, 127, "");
-				else if (check_access == -2)  //4 Cmd check
-					exit_status(data, 127, "malloc error from [ft_check_access]");
-			}
+		if (data->cmd->args[0])
+		{
+			int check_access = ft_is_builtins_no_access(data);
+			if (ft_builtins_env(data, i) == 0)
+				if (check_access == 0)
+					ft_stat_check(ft_check_access(data), data);
 			if (i == 1)
 			{	//5. exec (cmd_first) | cmd_middle... | cmd_last
 				//printf("go exec first\n");
@@ -204,40 +209,27 @@ int	launch_exec(t_data *data)
 	return (0);
 }
 
-#include <signal.h>
-
-void handle_sigint(int sig) {
-    (void)sig;              // Pour éviter les avertissements de variable non utilisée
-    write(STDOUT_FILENO, "\n", 1);
+void handle_sigint(int sig) 
+{
+	(void)sig;              // Pour éviter les avertissements de variable non utilisée
+	write(STDOUT_FILENO, "\n", 1);
 	rl_replace_line("", 0); // Effacer la ligne actuelle
-    rl_on_new_line();       // Repositionner le curseur sur une nouvelle ligne
-    rl_redisplay();         // Redisplay le prompt
+	rl_on_new_line();       // Repositionner le curseur sur une nouvelle ligne
+	rl_redisplay();         // Redisplay le prompt
 }
-
-void setup_signal_handlers() {
-    struct sigaction sa;
-
-    // Configurer le gestionnaire pour SIGINT (Ctrl+C)
-    sa.sa_handler = handle_sigint;   // Définir la fonction de gestion pour SIGINT
-    sigemptyset(&sa.sa_mask);        // Ne bloquer aucun signal pendant l'exécution de handle_sigint
-    sa.sa_flags = SA_RESTART;        // Réessayer les appels interrompus
-    sigaction(SIGINT, &sa, NULL);    // Appliquer cette action pour SIGINT
-}
-
 
 int	main(int argc, char **argv, char **envp)
 {
 	int		i;
 	t_data	data;
 
-
 	(void)argc;
 	(void)argv;
+	signal(SIGINT, handle_sigint);
 	i = 0;
 	data.exit_code = 0;
 	if (minishell_starter(envp, &data) == -1)
 		return (printf("Malloc error\n"), -1);
-	setup_signal_handlers();
 	while (1)
 	{
 		if (prompt_customer(&data) == 0)
@@ -253,8 +245,11 @@ int	main(int argc, char **argv, char **envp)
 					}
 			}
 		}
+		else
+			break;
 	}
 	rl_clear_history();
+	return(0);
 }
 
 //launch_exec | bultins

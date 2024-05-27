@@ -1,0 +1,15 @@
+27/05/2024 
+
+RAYANE--	probleme en cas de pipe avec un builtin en premiere, (exemple "env | grep TERM")
+
+RAYANE--	cas des '/.' qui devrait renvoyer is a directory
+
+RAYANE--	[679]	> ">pwd" doit creer le fichier pwd
+
+RAYANE--	[680]	> "< pwd" ne fait rien - resultat attendu : "bash: pwd: No such file or directory"
+
+RAYANE--	[692]	> ">>hola" doit creer le fichier hola 
+
+RAYANE--	[205] ($HOME) Its a directory attendu avec stat
+
+RAYANE--	Echo [89] a Gerer echo -nHola

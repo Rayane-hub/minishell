@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fork.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 15:12:43 by rasamad           #+#    #+#             */
-/*   Updated: 2024/05/23 14:10:35 by gavairon         ###   ########.fr       */
+/*   Updated: 2024/05/27 18:33:04 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,11 +139,11 @@ int	ft_first_fork(t_data *data)
 			exit_status(data, WIFEXITED(status), "");//Pourquoi une fois echo $? apres cmd not perm il affiche pas exit_stat qui semble etre bien a 1, cest pcq je fait pas return -1`
 			return (-1);
 		}
-		if (WIFSIGNALED(status)) {
+		/*if (WIFSIGNALED(status)) {
 			int signal_number = WTERMSIG(status);
-			printf("Command terminated by signal: %d\n", signal_number);
+			//printf("Command terminated by signal: %d\n", signal_number);
 			// Ici, vous pouvez ajuster votre logique en fonction du signal reçu
-		}
+		}*/
 	}
 	return (0);
 }
@@ -206,7 +206,7 @@ int	ft_middle_fork(t_data *data)
 			}
 		}
 		//2. SINON SI il y a bien un next
-		if (lst->next)
+		else if (lst->next)
 		{//met la data de la sortie de lexecve dans lextremiter decriture du pipe
 			if (dup2(data->pipe_fd[1], STDOUT_FILENO) == -1)
 			{
