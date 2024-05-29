@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:19:08 by rasamad           #+#    #+#             */
-/*   Updated: 2024/05/27 13:48:27 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/28 13:47:42 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,16 @@
 
 void	display_error_cmd(t_cmd *lst)
 {
-	ft_putstr_fd("minishell: commande not found: ", 2);
 	ft_putstr_fd(lst->args[0], 2);
+	ft_putstr_fd(": commande not found", 2);
 	write(2, "\n", 1);
 }
 
-void	display_no_such(t_cmd *lst)
+void	display_no_such(char *str)
 {
-	ft_putstr_fd("minishell: no such file or directory: ", 2);
-	ft_putstr_fd(lst->args[0], 2);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(str, 2);
+	ft_putstr_fd(": No such file or directory", 2);
 	write(2, "\n", 1);
 }
 

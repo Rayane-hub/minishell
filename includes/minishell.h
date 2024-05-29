@@ -6,12 +6,13 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:07:18 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/27 17:55:13 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/29 17:19:45 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
+
 
 # include <stdlib.h>
 # include <string.h>
@@ -26,6 +27,8 @@
 # include <stdbool.h>
 # include <signal.h>
 # include <sys/stat.h>
+
+extern volatile sig_atomic_t g_sig;
 
 typedef struct s_expand
 {
@@ -100,21 +103,21 @@ typedef struct s_data
 }			t_data;
 
 t_cmd	*ft_lstnew_minishell(void);
-void	handle_sigint(int sig);
+void	handle_sigint_main(int sig);
 t_cmd	*ft_lstlast_minishell(t_cmd *lst);
 void    ft_lstadd_back_minishell(t_cmd **lst, t_cmd *new);
-int		ft_lstlen(t_cmd *elem);
+int		ft_lstlen(t_cmd *lst);
 int    ft_redirecter(t_data *data);
 int		ft_check_access(t_data *data);
 int		ft_first_fork(t_data *data);
 int		ft_middle_fork(t_data *data);
 int		ft_last_fork(t_data *data);
-void    display_error_cmd(t_cmd *elem);
-void    display_no_such(t_cmd *elem);
-void    ft_free_access(t_cmd *elem);
-void    ft_free_token(t_cmd *elem);
+void    display_error_cmd(t_cmd *lst);
+void    display_no_such(char *str);
+void    ft_free_access(t_cmd *lst);
+void    ft_free_token(t_cmd *lst);
 void    ft_free_lst(t_cmd *lst);
-void    ft_close(t_cmd *elem);
+void    ft_close(t_cmd *lst);
 int		rafters_checker(char *rl);
 int		double_pipe_checker(char *rl);
 int		cote_checker(char *rl);
@@ -128,7 +131,7 @@ void	path_cmd_free(t_cmd *lst);
 void	slash_cmd_free(t_cmd *lst);
 void	ft_lstdelone(t_cmd *lst);
 void	ft_lstclear(t_cmd **lst);
-int		ft_lstlen(t_cmd *elem);
+int		ft_lstlen(t_cmd *lst);
 void	command_stocker(char **input, t_cmd **cmd);
 int		args_memory_alloc(char **input, t_cmd **cmd);
 int		memory_alloc(char **input, t_cmd **cmd);

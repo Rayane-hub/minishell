@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 15:49:33 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/27 12:39:17 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/29 17:20:08 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,18 @@ void	ft_free_heredoc(t_data *data)
 	}
 }
 
+void handle_sigint_heredoc(int sig) {
+    (void)sig;
+    g_sig = 1;
+	printf("^C");
+    rl_done = 1; // Interrompt readline proprement
+}
+
+int	rl_hook_function()
+{
+	signal(SIGINT, handle_sigint_heredoc);
+	return (0);
+}
 int ft_heredoc(t_data *data) 
 {
     int i = 0;  // Indice du nombre de Heredocs
@@ -103,12 +115,20 @@ int ft_heredoc(t_data *data)
 	lst = data->cmd;
     lst->heredoc_content = NULL;
 	lst->del_one = 0;
-
+	rl_callback_handler_install("", NULL);
+	rl_event_hook = rl_hook_function;
 	while (lst)
 	{
 		while (i < lst->nb_del && lst->heredoc == true) 
 		{
 			line = readline(">");
+			if (g_sig) {
+				exit_status(data, 130, "");
+				free(line);
+				rl_callback_handler_remove(); // Retirer le gestionnaire de readline
+				//signal(SIGINT, handle_sigint_main); // Restaure le gestionnaire de signal SIGINT principal
+				return -1; // Quitter la fonction si un signal SIGINT a été reçu
+			}
 			if (line == NULL)
 			{
 				printf("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", lst->delimiter[i]);
@@ -137,7 +157,14 @@ int ft_heredoc(t_data *data)
 					{
 						printf("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", lst->delimiter[i]);
 						line = ft_strdup(lst->delimiter[i]);
-					}	
+					}
+					if (g_sig) {
+						exit_status(data, 130, "");
+						free(line);
+						rl_callback_handler_remove(); // Retirer le gestionnaire de readline
+						//signal(SIGINT, handle_sigint_main); // Restaure le gestionnaire de signal SIGINT principal
+						return -1; // Quitter la fonction si un signal SIGINT a été reçu
+					}
 				}
 				free(line);  // Libère la mémoire allouée par readline	
 			}
@@ -148,6 +175,8 @@ int ft_heredoc(t_data *data)
 		i = 0;
 		lst = lst->next;
 	}
+	rl_callback_handler_remove(); // Retirer le gestionnaire de readline
+	//signal(SIGINT, handle_sigint_main); // Restaure le gestionnaire de signal SIGINT principal
     return (0);
 }
 

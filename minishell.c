@@ -6,11 +6,14 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 11:02:31 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/27 18:35:38 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/29 17:27:21 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/minishell.h"
+
+// Définition de la variable globale
+volatile sig_atomic_t g_sig = 0;
 
 void	ft_unset(t_data **data)
 {
@@ -136,7 +139,8 @@ void	ft_stat_check(int check_access, t_data *data)
 {
 	struct stat statbuf;
 	if (check_access == 0){
-		stat(data->cmd->path_cmd, &statbuf);
+		if (stat(data->cmd->path_cmd, &statbuf) == -1)
+			printf("command not found ?");
 		if (S_ISDIR(statbuf.st_mode))
 		{
 			exit_status(data, 126, "");
@@ -209,13 +213,14 @@ int	launch_exec(t_data *data)
 	return (0);
 }
 
-void handle_sigint(int sig) 
+void handle_sigint_main(int sig) 
 {
 	(void)sig;              // Pour éviter les avertissements de variable non utilisée
 	write(STDOUT_FILENO, "\n", 1);
 	rl_replace_line("", 0); // Effacer la ligne actuelle
 	rl_on_new_line();       // Repositionner le curseur sur une nouvelle ligne
 	rl_redisplay();         // Redisplay le prompt
+	g_sig = 1;
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -225,24 +230,26 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	signal(SIGINT, handle_sigint);
-	i = 0;
 	data.exit_code = 0;
 	if (minishell_starter(envp, &data) == -1)
 		return (printf("Malloc error\n"), -1);
 	while (1)
 	{
+		signal(SIGINT, handle_sigint_main);
+		signal(SIGQUIT, SIG_IGN); // Ignorer le signal SIGQUIT
 		if (prompt_customer(&data) == 0)
 		{
 			if (data.var.rl[0] != '\0' && syntaxe_error(&data, data.var.rl) == 0)
 			{
 				if (parser(&data) == 0)
+				{
 					if (final_parse(&data) == -1)
 					{
 						ft_lstclear(&data.cmd);
 						free_pipes(data.var.pipes);
 						free(data.var.pwd);
 					}
+				}
 			}
 		}
 		else

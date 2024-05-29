@@ -6,11 +6,12 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 15:12:43 by rasamad           #+#    #+#             */
-/*   Updated: 2024/05/27 18:33:04 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/29 17:31:24 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
 
 int	ft_fd_heredoc(t_cmd *lst)
 {
@@ -62,17 +63,29 @@ int	ft_builtins_env_fork(t_data *data)
 	return (0);
 }
 
+void	handle_sigint_fork(int sig) 
+{
+	(void)sig;              // Pour éviter les avertissements de variable non utilisée
+	printf("\n");
+	g_sig = 1;
+}
+
+void	handle_sigquit_fork(int sig) 
+{
+	(void)sig;              // Pour éviter les avertissements de variable non utilisée
+	g_sig = 2;
+}
+
 int	ft_first_fork(t_data *data)
 {
 	pid_t	pid;
 	t_cmd	*lst;
 
+	signal(SIGINT, handle_sigint_fork);
+	signal(SIGQUIT, handle_sigquit_fork);
 	pid = fork();
 	if (pid < 0)
-	{
-		perror("fork first failed :");
-		exit(EXIT_FAILURE);
-	}
+		return (perror("fork first failed :"), -1);
 	if (pid == 0) //Children
 	{
 		lst = data->cmd;
@@ -131,6 +144,10 @@ int	ft_first_fork(t_data *data)
 		int status;
 		waitpid(pid, &status, 0);
 
+		if (g_sig)
+			return (exit_status(data, 130, ""), g_sig = 0, -1);
+		if (g_sig == 2)
+			return(exit_status(data, 131, "^\\Quit (core dumped)\n"), g_sig = 0, -1);
 		if (status == 0)
 			return (-1);
 		if (WIFEXITED(status)) {//execve failed
@@ -139,11 +156,11 @@ int	ft_first_fork(t_data *data)
 			exit_status(data, WIFEXITED(status), "");//Pourquoi une fois echo $? apres cmd not perm il affiche pas exit_stat qui semble etre bien a 1, cest pcq je fait pas return -1`
 			return (-1);
 		}
-		/*if (WIFSIGNALED(status)) {
+		if (WIFSIGNALED(status)) {
 			int signal_number = WTERMSIG(status);
 			//printf("Command terminated by signal: %d\n", signal_number);
 			// Ici, vous pouvez ajuster votre logique en fonction du signal reçu
-		}*/
+		}
 	}
 	return (0);
 }

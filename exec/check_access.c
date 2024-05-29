@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:24:55 by rasamad           #+#    #+#             */
-/*   Updated: 2024/05/27 17:49:16 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/28 13:49:52 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int	ft_check_access(t_data *data)
     int check_slash_point;
 
     lst = data->cmd;
-
 	check_slash_point = ft_check_slash_point(data);
 	lst = data->cmd;
 	if (check_slash_point == -1)
@@ -60,7 +59,7 @@ int	ft_check_access(t_data *data)
 	if (ft_strchr(lst->args[0], '/'))//verif si path de args[0]
 	{
 		if (access(lst->args[0], F_OK) == -1)
-			return (exit_status(data, 127, ""), display_no_such(lst), -1);
+			return (exit_status(data, 127, ""), display_no_such(lst->args[0]), -1);
 		else
 			return (lst->path_cmd = lst->args[0], 0);
 	}
@@ -72,7 +71,7 @@ int	ft_check_access(t_data *data)
 	while (data->var.mini_env[lst->i] && ft_strncmp(data->var.mini_env[lst->i], "PATH=", 5))
 		lst->i++;
 	if (data->var.mini_env[lst->i] == NULL)
-		return (exit_status(data, 126, ""), display_is_dir(lst), -1);
+		return (exit_status(data, 126, ""), display_no_such(lst->args[0]), -1);
 	lst->split_path = ft_split(data->var.mini_env[lst->i], ':');
 	if (!lst->split_path)
 		return (-2);
