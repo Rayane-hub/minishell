@@ -6,19 +6,17 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:24:55 by rasamad           #+#    #+#             */
-/*   Updated: 2024/05/28 13:49:52 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/03 13:04:52 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
 //Cas ---> . (return -1) ou Cas ---> /./../// (return -2)
-int	ft_check_slash_point(t_data *data)
+int	ft_check_slash_point(t_cmd *lst)
 {
 	int		i;
-	t_cmd	*lst;
 
-	lst = data->cmd;
 	i = 0;
 	if (lst->args[0][0] == '.' && lst->args[0][1] == '\0')
 		return (-1);
@@ -44,14 +42,11 @@ void	display_is_dir(t_cmd *lst)
 
 //Fonction	: Verifie si la args[0] est good
 //Renvoi	: -2 --> malloc crash / -1 --> echec / 0 --> success 
-int	ft_check_access(t_data *data)
+int	ft_check_access(t_data *data, t_cmd *lst)
 {
-	t_cmd *lst;
     int check_slash_point;
 
-    lst = data->cmd;
-	check_slash_point = ft_check_slash_point(data);
-	lst = data->cmd;
+	check_slash_point = ft_check_slash_point(lst);
 	if (check_slash_point == -1)
 		return (exit_status(data, 2, "minishell: .: filename argument required\n.: usage: . filename [arguments]\n"), -1);
 	if (check_slash_point == -2)

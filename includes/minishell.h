@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:07:18 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/29 17:19:45 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/03 13:04:52 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,10 +108,10 @@ t_cmd	*ft_lstlast_minishell(t_cmd *lst);
 void    ft_lstadd_back_minishell(t_cmd **lst, t_cmd *new);
 int		ft_lstlen(t_cmd *lst);
 int    ft_redirecter(t_data *data);
-int		ft_check_access(t_data *data);
-int		ft_first_fork(t_data *data);
-int		ft_middle_fork(t_data *data);
-int		ft_last_fork(t_data *data);
+int		ft_check_access(t_data *data, t_cmd *lst);
+int		ft_first_fork(t_data *data, t_cmd *lst);
+int		ft_middle_fork(t_data *data, t_cmd *lst);
+int		ft_last_fork(t_data *data, t_cmd *lst);
 void    display_error_cmd(t_cmd *lst);
 void    display_no_such(char *str);
 void    ft_free_access(t_cmd *lst);

@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 15:12:43 by rasamad           #+#    #+#             */
-/*   Updated: 2024/05/29 17:31:24 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/03 13:04:52 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,9 @@ void	handle_sigquit_fork(int sig)
 	g_sig = 2;
 }
 
-int	ft_first_fork(t_data *data)
+int	ft_first_fork(t_data *data, t_cmd *lst)
 {
 	pid_t	pid;
-	t_cmd	*lst;
 
 	signal(SIGINT, handle_sigint_fork);
 	signal(SIGQUIT, handle_sigquit_fork);
@@ -88,7 +87,6 @@ int	ft_first_fork(t_data *data)
 		return (perror("fork first failed :"), -1);
 	if (pid == 0) //Children
 	{
-		lst = data->cmd;
 		//1. SI il y a un infile ET quil est en dernier  sil y en a un et quil est en dernier
 		if (lst->redirecter && lst->fd_infile > 0 && lst->end_heredoc == 0)	// < f1
 		{//recupere les donner dans fd_infile au lieu de lentree standard
@@ -167,10 +165,9 @@ int	ft_first_fork(t_data *data)
 
 /******************************************************************************************************/
 
-int	ft_middle_fork(t_data *data)
+int	ft_middle_fork(t_data *data, t_cmd *lst)
 {
 	pid_t	pid;
-	t_cmd *lst;
 
 	pid = fork();
 	if (pid < 0)
@@ -180,7 +177,6 @@ int	ft_middle_fork(t_data *data)
 	}
 	else if (pid == 0)
 	{
-		lst = data->cmd;
 		//1. SI il y a un infile ET quil est en dernier  sil y en a un et quil est en dernier
 		if (lst->redirecter && lst->fd_infile > 0 && lst->end_heredoc == 0)// < f1
 		{//recupere les donner dans fd_infile au lieu de lentree standard
@@ -266,10 +262,9 @@ int	ft_middle_fork(t_data *data)
 
 /********************************************************************************************************/
 
-int	ft_last_fork(t_data *data)
+int	ft_last_fork(t_data *data, t_cmd *lst)
 {
 	pid_t	pid;
-	t_cmd	*lst;
 
 	pid = fork();
 	if (pid < 0){
@@ -278,7 +273,6 @@ int	ft_last_fork(t_data *data)
 	}
 	if (pid == 0)
 	{
-		lst = data->cmd;
 		//1. prend soit dans infile en prioriter sil y en a un
 		if (lst->redirecter && lst->fd_infile > 0 && lst->end_heredoc == 0)// < f1
 		{
