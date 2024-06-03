@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main_functions_nd.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:22:23 by gavairon          #+#    #+#             */
-/*   Updated: 2024/05/27 15:05:28 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/05/28 21:23:46 by gavairon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 void	command_positiver(char *pipes)
 {
@@ -80,45 +80,14 @@ void	data_initializer(t_data *data)
 	data->ambigous = 0;
 }
 
-int redirecter_finisher(t_data *data)
+int	redirecter_finisher(t_data *data)
 {
 	int		i;
 
 	i = 0;
-	data->cmd->red_copy = input_copyer(data->cmd->redirecter, data->cmd->red_copy);
+	data->cmd->red_copy = \
+	input_copyer(data->cmd->redirecter, data->cmd->red_copy);
 	data->cmd->redirecter = data->cmd->red_copy;
 	data->cmd->red_copy = NULL;
-	return (0);	
-}
-
-int	final_parse(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	if (node_creator(data) == -1)
-		return (exit_status(data, 1, "\033[31mMalloc error from [node_creator]\n\033[0m"), -1);
-	while (data->cmd->args[i])
-		command_positiver(data->cmd->args[i++]);
-	i = 0;
-	if (data->cmd->nb_del > 0)
-	{
-		while (i < data->cmd->nb_del)
-			command_positiver(data->cmd->delimiter[i++]);	
-	}
-	i = 0;
-	if (data->cmd->nb_red > 0)
-	{
-		redirecter_finisher(data);
-		while (data->cmd->redirecter[i])
-			command_positiver(data->cmd->redirecter[i++]);	
-	}
-	ft_printf_struct(data->cmd);
-	if (launch_exec(data) == -1)
-		return (-1);
-	data->exit_code = 0;
-	ft_lstclear(&data->cmd);
-	free_pipes(data->var.pipes);
-	free(data->var.pwd);
 	return (0);
 }

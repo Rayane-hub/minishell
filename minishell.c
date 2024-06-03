@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 11:02:31 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/03 13:05:24 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/03 17:05:12 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,14 +140,14 @@ void	ft_stat_check(int check_access, t_data *data, t_cmd *lst)
 int	launch_exec(t_data *data)
 {
 	int		i;
-	t_data	*begin;
+	t_cmd	*begin;
 	t_cmd	*lst;
 
 	// Check if the command is "exit" and handle it before anything else
 	if (data->cmd->args[0] && data->cmd->next == NULL && ft_strcmp(data->cmd->args[0], "exit") == 0)
 		ft_exit_prog(data);
-	begin = data;
-	lst = begin->cmd;
+	begin = data->cmd;
+	lst = begin;
 	data->var.mini_env = ft_list_to_tab(data->mini_env);
 	if (!data->var.mini_env)
 		return (-1);
@@ -197,10 +197,37 @@ int	launch_exec(t_data *data)
 		ft_close(data->cmd);
 		lst = lst->next;
 	}
+	free_pipes(data->var.mini_env);
+    data->var.mini_env = NULL;
+	//printf("begin->cmd = |%s|\nlst = |%p|\ndata->cmd = |%s|\nl", begin->cmd->heredoc_content[0], lst, data->cmd->heredoc_content[0]);
 	ft_free_all_heredoc(begin);
 	if (data->exit_code != 0)
 		return (-1);
 	return (0);
+}
+
+
+
+void free_env(t_env *env)
+{
+    t_env *tmp;
+
+    while (env)
+    {
+        tmp = env->next;
+        if (env->name)
+        {
+            free(env->name);
+            env->name = NULL;
+        }
+        if (env->value)
+        {
+            free(env->value);
+            env->value = NULL;
+        }
+        free(env);
+        env = tmp;
+    }
 }
 
 void handle_sigint_main(int sig) 
@@ -217,9 +244,10 @@ int	main(int argc, char **argv, char **envp)
 {
 	int		i;
 	t_data	data;
-
+	
 	(void)argc;
 	(void)argv;
+	i = 0;
 	data.exit_code = 0;
 	if (minishell_starter(envp, &data) == -1)
 		return (printf("Malloc error\n"), -1);
@@ -237,18 +265,19 @@ int	main(int argc, char **argv, char **envp)
 					{
 						ft_lstclear(&data.cmd);
 						free_pipes(data.var.pipes);
-						free(data.var.pwd);
+						if (data.var.mini_env)
+						{
+							free_pipes(data.var.mini_env);
+							data.var.mini_env = NULL;
+						}
 					}
 				}
 			}
 		}
 		else
-			break;
+			//free()
+			break ;
 	}
+	free_env(data.mini_env);
 	rl_clear_history();
-	return(0);
 }
-
-//launch_exec | bultins
-
-//faire < (syntaxe err) puis ls

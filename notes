@@ -1,34 +1,6 @@
 
 
----------------------------RESOLVED-------------------------------------
-
-RAYANE--	probleme en cas de pipe avec un builtin en premiere, (exemple "env | grep TERM")
-
-RAYANE--	cas des '/.' qui devrait renvoyer is a directory
-
-RAYANE--	[679]	> ">pwd" doit creer le fichier pwd  RESOLVED V
-
-RAYANE--	[680]	> "< pwd" ne fait rien - resultat attendu : "bash: pwd: No such file or directory"
-
-RAYANE--	[692]	> ">>hola" doit creer le fichier hola 
-
-RAYANE--	[205] ($HOME) Its a directory - attendu 
-
-RAYANE--	Echo [89] a Gerer echo -nHola
-
-RAYANE--	[334] de unset PATH, ensuite ls, segfault au lieu de No such file or directory
-
-RAYANE--	[237] export | grep je crois que le builtin nentre pas dans les forks
-
-RAYANE--	[392] pwd -p = invalid option
-
-RAYANE--	[706]	> ">srcs/bonjour >srcs/hello <prout" ne fait rien - resultat attemdu : "bash: prout: No such file or directory"
- 
-RAYANE--	[755]	> SEGFAULT avec cat <<hd <<hd <<hd (>1 heredeoc)
-
-RAYANE--	[>382] ex: /bin/echo est exec par execve
-
- --------	[211] /!\ SIGNAUX----------------------------------------- 223
+--------	[211] /!\ SIGNAUX----------------------------------------- 223
 
 malloc error que faire ? (free et renvoi un prompt)
 
@@ -60,93 +32,63 @@ sleep 5 | sleep 5
 
 ---------------------------------------------------------------------------------------------------------------
 
-JORDAN--	tri douteux sur export (exemple: lol, loll, lol2, lol3)
+--------	[211] /!\ SIGNAUX----------------------------------------- 223
+
+RAYANE--	probleme en cas de pipe avec un builtin en premiere, (exemple "env | grep TERM")
+
+RAYANE--	cas des '/' qui devrait renvoyer is a directory
+
+RAYANE--	[205] ($HOME) Its a directory - attendu 
+
+RAYANE--	Echo [89] a Gerer
+
+RAYANE--	[237] export | grep je crois que le builtin nentre pas dans les forks
+
+RAYANE--	[334] de unset PATH, ensuite ls, segfault au lieu de No such file or directory
+
+RAYANE--	[>382] ex: /bin/echo = command path ok au lieu dexec
+
+RAYANE--	[392] pwd -p = invalid option
+	{
+		399 > cd, a tester
+		reprise >>>> cas 640 (avant full test cd, exit ou builtin avec pipe donc a tester)
+	}
+
+RAYANE--	[679]	> ">pwd" doit creer le fichier pwd 
+
+RAYANE--	[680]	> "< pwd" ne fait rien - resultat attendu : "bash: pwd: No such file or directory"
+
+RAYANE--	[692]	> ">>hola" doit creer le fichier hola 
+
+RAYANE--	[706]	> ">srcs/bonjour >srcs/hello <prout" ne fait rien - resultat attemdu : "bash: prout: No such file or directory"
+
+RAYANE--	[755]	> SEGFAULT avec cat <<hd <<hd <<hd (>1 heredeoc)
+
+RAYANE--			> echo coucou >f1|cat f1 >f2|cat f2 ne met rien dans f2
 
 JORDAN--	[296] export HOLA="'" quand je echo $HOLA -> la "'" est supprimee
 
-JORDAN--	[761]	> "echo hola <<< bonjour" est sense fonctionner - resultat attendu : "hola"
 
 																	SI DOUTES, CONFIRMER AVEC LE VRAI BASH |||||||||||||||||||||||||||||
 
 >>>>>>>>>>>>>>>>>>>>>>			NORMINETTE			<<<<<<<<<<<<<<<<<<<<<<<<
-
-other
-|___ builtins.c -NORMED
-|___ env.c		-NORMED
-|___ lst_add.c	-NORMED
-|___ other.c	-NORMED
-
-ALL NORMED_____________
-
-parsing
-|___ commands_stocker.c	-NORMED
-|___ utilities.c		-NORMED
-|___ utilities_nd.c		-NORMED
-|___ syntaxe_errors.c	-NORMED
+ parsing/ : NORMED
 
 
 
 
-int	launch_exec(t_data *data)
-{
-	int		i;
-	t_data	*begin;
 
-	// Check if the command is "exit" and handle it before anything else
-	if (data->cmd->args[0] && data->cmd->next == NULL && ft_strcmp(data->cmd->args[0], "exit") == 0)
-		ft_exit_prog(data);
-	begin = data;
-	data->var.mini_env = ft_list_to_tab(data->mini_env);
-	if (!data->var.mini_env)
-		return (-1);
-	data->save_pipe = 0;
-	i = 0;
-	int len_lst = ft_lstlen(data->cmd);
-	if (ft_heredoc(data) == -1)
-		return (ft_free_all_heredoc(begin), -1);
-	//ft_display_heredoc(data->cmd);
-	while (data->cmd)
-	{
-		data->exit_code = 0;
-		i++;
-		if (data->cmd->redirecter)	//2. redirecter check
-			ft_redirecter(data);
-		if (data->cmd->next != NULL)		//3. Pipe check ne peut etre fait si 3 ou plus de cmd car il va refaire un pipe et erase lancien alors aue pour 2 cmd il fait qun pipe
-			if (pipe(data->pipe_fd) == -1)
-				exit_status(data, 1, "pipe failed\n");
-		if (data->cmd->args[0])
-		{
-			int check_access = ft_is_builtins_no_access(data);
-			if (ft_builtins_env(data, i) == 0)
-				if (check_access == 0)
-					ft_stat_check(ft_check_access(data), data);
-			if (i == 1)
-			{	//5. exec (cmd_first) | cmd_middle... | cmd_last
-				//printf("go exec first\n");
-				ft_first_fork(data);
-				if (data->pipe_fd[1] > 3)
-					close(data->pipe_fd[1]);// je close lecriture pour pas que la lecture attende indefinement.
-				data->save_pipe = data->pipe_fd[0]; //je save la lecture pour le next car je vais re pipe pour avoir un nouveau canal 
-			}
-			else if (i < len_lst)
-			{	//6. exec cmd_first | (cmd_middle...) | cmd_last
-				//printf("go exec mid\n");
-				ft_middle_fork(data);
-				close(data->pipe_fd[1]);
-				data->save_pipe = data->pipe_fd[0];
-			}
-			else if (i == len_lst)
-			{	//7. exec  exec cmd_first | cmd_middle... | (cmd_last)
-				//printf("go exec last\n");
-				ft_last_fork(data);
-				close(data->pipe_fd[0]);
-			}
-		}
-		ft_close(data->cmd);
-		data->cmd = data->cmd->next;
-	}
-	ft_free_all_heredoc(begin);
-	if (data->exit_code != 0)
-		return (-1);
-	return (0);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
