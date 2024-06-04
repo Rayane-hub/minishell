@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 11:02:31 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/03 17:05:12 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/04 14:55:14 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,13 +114,41 @@ int	ft_builtins_env(t_cmd *lst, t_data *data, int i)
 	return (0);
 }
 
+int	ft_check_num(t_data *data)
+{
+	int	i;
+	//not + ou not - ou not inverse de compris entre 0 et 9
+	if (data->cmd->args[1][0] != '+' && data->cmd->args[1][0] != '-' && \
+	(!(data->cmd->args[1][0] >= '0' && data->cmd->args[1][0] <= '9')))
+		return(-1);
+	if (data->cmd->args[1][0] == '+' \
+	&& (!(data->cmd->args[1][1] >= '0' && data->cmd->args[1][1] <= '9')))
+		return(-1);	// just +
+	else if (data->cmd->args[1][0] == '-' && \
+	(!(data->cmd->args[1][1] >= '0' && data->cmd->args[1][1] <= '9')))
+		return(printf("wrong (-) %s\n", data->cmd->args[1]), -1);	// just -
+	i = 1;
+	while(data->cmd->args[1][i])
+	{
+		if ((!(data->cmd->args[1][i] >= '0' && data->cmd->args[1][i] <= '9')))
+			return(-1);
+		i++;
+	}
+	return (0);
+}
+
 void	ft_exit_prog(t_data *data)
 {
 	int exit_status = 0;
+	if (data->cmd->args[1] && ft_check_num(data) == -1)
+	{
+		printf("minishell: exit: %s: numeric argument required\n", data->cmd->args[1]);
+		//exit(2);
+	}
 	if (data->cmd->args[1])
 		exit_status = ft_atoi(data->cmd->args[1]); // Convert argument to exit status
 	//ft_free_data(data); // Free any allocated memory
-	exit(exit_status); // Exit the shell with the given status
+	//exit(exit_status); // Exit the shell with the given status
 }
 
 void	ft_stat_check(int check_access, t_data *data, t_cmd *lst)
@@ -137,6 +165,7 @@ void	ft_stat_check(int check_access, t_data *data, t_cmd *lst)
 	}
 }
 
+
 int	launch_exec(t_data *data)
 {
 	int		i;
@@ -146,6 +175,7 @@ int	launch_exec(t_data *data)
 	// Check if the command is "exit" and handle it before anything else
 	if (data->cmd->args[0] && data->cmd->next == NULL && ft_strcmp(data->cmd->args[0], "exit") == 0)
 		ft_exit_prog(data);
+	return (-1);
 	begin = data->cmd;
 	lst = begin;
 	data->var.mini_env = ft_list_to_tab(data->mini_env);
@@ -272,6 +302,10 @@ int	main(int argc, char **argv, char **envp)
 						}
 					}
 				}
+			}
+			else
+			{
+				free(data.var.rl);
 			}
 		}
 		else

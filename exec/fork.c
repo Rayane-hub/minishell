@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 15:12:43 by rasamad           #+#    #+#             */
-/*   Updated: 2024/06/03 16:08:53 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/03 19:13:07 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	ft_fd_heredoc(t_cmd *lst)
 		return (write(lst->fd_str_rand, "\0", 1), 0);
 	write(lst->fd_str_rand, lst->heredoc_content, ft_strlen(lst->heredoc_content));
 	close(lst->fd_str_rand);
-	return 0;
+	return (0);
 }
 
 /*******************************************************************************************************/
