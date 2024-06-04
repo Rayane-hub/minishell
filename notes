@@ -1,44 +1,57 @@
+-----------------------RESOLVED----------------------------------------- 223
+
+[EXIT] -------> 473 voir ceux non resolved
+
+ls | <f1 cat printf ls au lieu de f1
+
+ctrl \ children QUit core + 131 errno
+
+cat > $HOME minishell: f1: No such file or directory au lieu de ---> bash: /home/rasamad: Is a directory
 
 --------	[211] /!\ SIGNAUX----------------------------------------- 223
 
---------	[211] /!\ SIGNAUX----------------------------------------- 223
+minishell$> sleep 5 | sleep 5
 
-PUSH AVANT REBOOT !
+PDF 399 -- 640 a faire
+
+minishell$> go 
+minishell$> echo $?
+2
+
+minishell$> $HOME
+--------------=Command name=--------------
+	Commande -> |/home/rasamad|
+----------------=Arguments=---------------
+-------------=End of command=-------------
+minishell: /home/rasamad: Is a directory
+malloc_consolidate(): invalid chunk size
+fish: Job 1, './minishell' terminated by signal SIGABRT (Abort)
+
+if (stat(lst->redirecter[i] + j, &statbuf) == -1) <------------ obligatoire ? a quoi sa sert ?
+						;
+if (S_ISDIR(statbuf.st_mode))
+	display_is_dir(lst->args[0])
 
 malloc error que faire ? (free et renvoi un prompt)
-
-cat ctrl c 2x prompt (mettre fin au signal en rappeleant la ft)
-
-rasamad@z1r2p5:~/Documents/minishell$ exit abc
-exit
-bash: exit: abc: numeric argument required
-z1r2p5% echo $?
-2
-
-go 
-echo $?
-2
-
-
 check si tous les malloc sont proteger
 
-[EXIT] -------> 473
+minishell$> exit not exit passe par arg[2] != NULL ?
+minishell$> exit 66 66 passe par arg[2] != NULL mais ne met pas 1 exit_status() ?
 
-sleep 5 | sleep 5
-	{
-		PDF 399 -- 640 a faire
-		(avant full test cd, exit ou builtin avec pipe donc a tester)
-		ls / | grep home | wc -l | < file1 > file2 | cat SEGFEU
-		echo lol avec unset path nest pas senser afficher lol mais le fait vu que c un builtins
-		ctrl C exit_status(130)
-		exit abc --> print err bash
-	}
 
 --*----------------*-------->> Suprime .heredoc
 
+minishell$> echo coucou >f1|cat f1 >f2|cat f2 ne met rien dans f2
+
+
+rasamad@z1r4p5:~/Documents/minishell$ ls / | grep home | wc -l | < file1 > file2 | cat
+print 1 du wc -l au lieu de sarreter a lerreur du < file 1 inexistant
+
+
 ---------------------------------------------------------------------------------------------------------------
 
-RAYANE--			> echo coucou >f1|cat f1 >f2|cat f2 ne met rien dans f2
+
+
 
 JORDAN--	[296] export HOLA="'" quand je echo $HOLA -> la "'" est supprimee
 

@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 11:02:31 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/04 14:55:14 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/04 19:18:24 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int	ft_check_num(t_data *data)
 		return(-1);	// just +
 	else if (data->cmd->args[1][0] == '-' && \
 	(!(data->cmd->args[1][1] >= '0' && data->cmd->args[1][1] <= '9')))
-		return(printf("wrong (-) %s\n", data->cmd->args[1]), -1);	// just -
+		return(-1);	// just -
 	i = 1;
 	while(data->cmd->args[1][i])
 	{
@@ -137,34 +137,38 @@ int	ft_check_num(t_data *data)
 	return (0);
 }
 
-void	ft_exit_prog(t_data *data)
+int	ft_exit_prog(t_data *data)
 {
-	int exit_status = 0;
+	int exit_stat = 0;
+	printf("exit\n");
 	if (data->cmd->args[1] && ft_check_num(data) == -1)
 	{
 		printf("minishell: exit: %s: numeric argument required\n", data->cmd->args[1]);
-		//exit(2);
+		exit(2);
 	}
+	if (data->cmd->args[2] != NULL)
+		return(exit_status(data, 1, "minishell: exit: too many arguments\n"), 0);
 	if (data->cmd->args[1])
-		exit_status = ft_atoi(data->cmd->args[1]); // Convert argument to exit status
+		exit_stat = ft_atoi(data->cmd->args[1]) % 256; // Convert argument to exit status
+	exit(exit_stat);
 	//ft_free_data(data); // Free any allocated memory
-	//exit(exit_status); // Exit the shell with the given status
+	return (0);
 }
 
 void	ft_stat_check(int check_access, t_data *data, t_cmd *lst)
 {
 	struct stat statbuf;
-	if (check_access == 0){
+	if (check_access == 0)
+	{
 		if (stat(lst->path_cmd, &statbuf) == -1)
-			printf("command not found ?");
+			printf("command not Found");
 		if (S_ISDIR(statbuf.st_mode))
 		{
 			exit_status(data, 126, "");
-			display_is_dir(lst);
+			display_is_dir(lst->args[0]);
 		}
 	}
 }
-
 
 int	launch_exec(t_data *data)
 {
@@ -174,8 +178,7 @@ int	launch_exec(t_data *data)
 
 	// Check if the command is "exit" and handle it before anything else
 	if (data->cmd->args[0] && data->cmd->next == NULL && ft_strcmp(data->cmd->args[0], "exit") == 0)
-		ft_exit_prog(data);
-	return (-1);
+		return(ft_exit_prog(data));
 	begin = data->cmd;
 	lst = begin;
 	data->var.mini_env = ft_list_to_tab(data->mini_env);
@@ -192,7 +195,7 @@ int	launch_exec(t_data *data)
 		data->exit_code = 0;
 		i++;
 		if (lst->redirecter)	//2. redirecter check
-			ft_redirecter(data);
+			ft_redirecter(data, lst);
 		if (lst->next != NULL)		//3. Pipe check ne peut etre fait si 3 ou plus de cmd car il va refaire un pipe et erase lancien alors aue pour 2 cmd il fait qun pipe
 			if (pipe(data->pipe_fd) == -1)
 				exit_status(data, 1, "pipe failed\n");
@@ -235,8 +238,6 @@ int	launch_exec(t_data *data)
 		return (-1);
 	return (0);
 }
-
-
 
 void free_env(t_env *env)
 {
