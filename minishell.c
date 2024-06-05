@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 11:02:31 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/04 19:18:24 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/05 14:09:09 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,6 @@ int	ft_is_builtins_no_access(t_cmd *lst)
 		return (1);
 	else if (ft_strcmp(lst->args[0], "cd") == 0)
 		return (1);
-	else if (ft_strcmp(lst->args[0], "exit") == 0)
-		return (1);
 	return (0);
 }
 
@@ -146,8 +144,8 @@ int	ft_exit_prog(t_data *data)
 		printf("minishell: exit: %s: numeric argument required\n", data->cmd->args[1]);
 		exit(2);
 	}
-	if (data->cmd->args[2] != NULL)
-		return(exit_status(data, 1, "minishell: exit: too many arguments\n"), 0);
+	if (data->cmd->nb_args > 2)
+		return(exit_status(data, 1, "minishell: exit: too many arguments\n"), -1);
 	if (data->cmd->args[1])
 		exit_stat = ft_atoi(data->cmd->args[1]) % 256; // Convert argument to exit status
 	exit(exit_stat);
@@ -155,7 +153,7 @@ int	ft_exit_prog(t_data *data)
 	return (0);
 }
 
-void	ft_stat_check(int check_access, t_data *data, t_cmd *lst)
+int	ft_stat_check(int check_access, t_data *data, t_cmd *lst)
 {
 	struct stat statbuf;
 	if (check_access == 0)
@@ -166,8 +164,10 @@ void	ft_stat_check(int check_access, t_data *data, t_cmd *lst)
 		{
 			exit_status(data, 126, "");
 			display_is_dir(lst->args[0]);
+			return (-1);
 		}
 	}
+	return (0);
 }
 
 int	launch_exec(t_data *data)
@@ -201,13 +201,11 @@ int	launch_exec(t_data *data)
 				exit_status(data, 1, "pipe failed\n");
 		if (lst->args[0])
 		{
-			int check_access = ft_is_builtins_no_access(lst);
 			if (ft_builtins_env(lst, data, i) == 0)
-				if (check_access == 0)
-					ft_stat_check(ft_check_access(data, lst), data, lst);
+				if (ft_stat_check(ft_check_access(data, lst), data, lst) == -1)
+					return (-1);
 			if (i == 1)
 			{	//5. exec (cmd_first) | cmd_middle... | cmd_last
-				//printf("go exec first\n");
 				ft_first_fork(data, lst);
 				if (data->pipe_fd[1] > 3)
 					close(data->pipe_fd[1]);// je close lecriture pour pas que la lecture attende indefinement.
@@ -215,14 +213,12 @@ int	launch_exec(t_data *data)
 			}
 			else if (i < len_lst)
 			{	//6. exec cmd_first | (cmd_middle...) | cmd_last
-				//printf("go exec mid\n");
 				ft_middle_fork(data, lst);
 				close(data->pipe_fd[1]);
 				data->save_pipe = data->pipe_fd[0];
 			}
 			else if (i == len_lst)
 			{	//7. exec  exec cmd_first | cmd_middle... | (cmd_last)
-				//printf("go exec last\n");
 				ft_last_fork(data, lst);
 				close(data->pipe_fd[0]);
 			}
@@ -232,7 +228,6 @@ int	launch_exec(t_data *data)
 	}
 	free_pipes(data->var.mini_env);
     data->var.mini_env = NULL;
-	//printf("begin->cmd = |%s|\nlst = |%p|\ndata->cmd = |%s|\nl", begin->cmd->heredoc_content[0], lst, data->cmd->heredoc_content[0]);
 	ft_free_all_heredoc(begin);
 	if (data->exit_code != 0)
 		return (-1);

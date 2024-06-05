@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/29 15:12:43 by rasamad           #+#    #+#             */
-/*   Updated: 2024/06/04 18:34:06 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/05 13:39:14 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,7 +321,7 @@ int	ft_last_fork(t_data *data, t_cmd *lst)
 		execve(lst->path_cmd, lst->args, data->var.mini_env);
 		perror("execve 3 : failed ");
 		exit(EXIT_FAILURE);
-	} 
+	}
 	else if (pid > 0)
 	{
 		int status;
