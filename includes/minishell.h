@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:07:18 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/04 18:54:03 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/11 19:33:54 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # include <signal.h>
 # include <sys/stat.h>
 
-extern volatile sig_atomic_t g_sig;
+extern volatile sig_atomic_t	g_sig;
 
 typedef struct s_expand
 {
@@ -37,7 +37,7 @@ typedef struct s_expand
 	char	*name;
 	int		value_len;
 	char	*value;
-	int 	nb_numbers;
+	int		nb_numbers;
 	int		code_copy;
 	int		in_cote;
 	bool	in_redirecter;
@@ -63,7 +63,7 @@ typedef struct s_env
 {
 	char			*name;
 	char			*value;
-	struct	s_env	*next;
+	struct s_env	*next;
 }					t_env;
 
 typedef struct s_cmd
@@ -72,7 +72,6 @@ typedef struct s_cmd
 	int				nb_args;
 	int				nb_red;
 	int				nb_del;
-	
 	int				heredoc;
 	int				expand_heredoc;
 	int				end_heredoc;
@@ -116,19 +115,19 @@ typedef struct s_int
 
 t_cmd		*ft_lstnew_minishell(void);
 t_cmd		*ft_lstlast_minishell(t_cmd *lst);
-void    	ft_lstadd_back_minishell(t_cmd **lst, t_cmd *new);
+void		ft_lstadd_back_minishell(t_cmd **lst, t_cmd *new);
 int			ft_lstlen(t_cmd *elem);
 int			ft_redirecter(t_data *data, t_cmd *lst);
 int			ft_check_access(t_data *data, t_cmd *lst);
-int			ft_first_fork(t_data *data, t_cmd *lst);
-int			ft_middle_fork(t_data *data, t_cmd *lst);
-int			ft_last_fork(t_data *data, t_cmd *lst);
-void    	display_error_cmd(t_cmd *elem);
-void    	display_no_such(char *str);
-void    	ft_free_access(t_cmd *elem);
-void    	ft_free_token(t_cmd *elem);
-void    	ft_free_lst(t_cmd *lst);
-void    	ft_close(t_cmd *elem);
+pid_t		ft_first_fork(t_data *data, t_cmd *lst);
+pid_t		ft_middle_fork(t_data *data, t_cmd *lst);
+pid_t		ft_last_fork(t_data *data, t_cmd *lst);
+void		display_error_cmd(t_cmd *elem);
+void		display_no_such(char *str);
+void		ft_free_access(t_cmd *elem);
+void		ft_free_token(t_cmd *elem);
+void		ft_free_lst(t_cmd *lst);
+void		ft_close(t_cmd *elem);
 int			rafters_checker(char *rl);
 int			double_pipe_checker(char *rl);
 int			cote_checker(char *rl);
@@ -146,7 +145,7 @@ int			ft_lstlen(t_cmd *elem);
 void		command_stocker(char **input, t_cmd **cmd);
 int			args_memory_alloc(char **input, t_cmd **cmd);
 int			memory_alloc(char **input, t_cmd **cmd);
-int			stock_input(char **input, t_cmd **cmd);
+int			stock_input(t_data *data, char **input, t_cmd **cmd);
 void		negative_checker(char *rl);
 int			expand_initializer(t_expand **var);
 char		*dolls_expander(char *rl, t_data *data);
@@ -155,9 +154,9 @@ int			redirecter(char *pipes, t_cmd **cmd);
 int			len_calculator(char	*pipes);
 char		*redirect_deleter(char	*pipes);
 int			ft_printf_struct(t_cmd *cmd);
-void		printf_title();
+void		printf_title(void);
 int			pipes_counter(char *rl);
-int			env_copyer(char **envp, t_env **mini_env);
+int			env_copyer(t_data **data, char **envp, t_env **mini_env);
 int			heredoc_counter(char *pipes);
 int			heredoc_memory_allocer(char *pipes, t_cmd **cmd);
 int			heredoc_copyer(char *pipes, t_cmd **cmd, int i, int del);
@@ -172,12 +171,11 @@ int			ft_envsize(t_env *mini_env);
 char		**ft_list_to_tab(t_env *mini_env);
 int			ft_builtins(t_cmd *lst);
 int			ft_heredoc(t_data *data);
-void		ft_display_heredoc(t_cmd *lst);
 int			minishell_starter(char **env, t_data *data);
-int 		prompt_customer(t_data *data);
+int			prompt_customer(t_data *data);
 int			parser(t_data *data);
 int			node_precreator(t_data *data, int i);
-int 		node_creator(t_data *data);
+int			node_creator(t_data *data);
 int			final_parse(t_data *data);
 void		command_positiver(char *pipes);
 char		*copy_w_cote(char *src, char *dest);
@@ -198,7 +196,7 @@ int			spec_export(char *cmd);
 void		ft_unset(t_data **data);
 int			ft_cd(t_data *data);
 void		ft_free_heredoc(t_cmd *begin);
-void		ft_free_all_heredoc(t_cmd *begin);
+void		free_all_heredoc(t_cmd *begin);
 int			if_condition_expand(t_expand *var, int choice);
 char		*value_extractor(char *env);
 char		*name_extractor(char *env);
@@ -225,7 +223,30 @@ int			negative_checker_variable(t_expand **var, t_data **data);
 int			check_variable(t_env **mini_env, char *name, char *value);
 void		display_is_dir(char *str);
 int			ft_is_builtins_no_access(t_cmd *lst);
-
-
+void		free_env(t_env *env);
+void		display_perror(char *str);
+char		*heredoc_w_cote(char *src);
+void		free_expand_opt(t_expand *var);
+int			basic_expander(char *rl, t_expand **var, t_data *data);
+int			basic_expander_helper(t_expand **var, t_data *data, char **rl);
+void		expand_on_output(t_expand **var, char **rl);
+void		end_name_search(t_expand **var);
+int			check_len(t_env *mini_env, int choice);
+int			stock_variable(t_data **data, int i);
+int			ft_export_display(t_env *mini_env);
+void		sort_env(char ***tab);
+int			ft_builtins_env(t_cmd *lst, t_data *data, int i);
+void		ft_signal(void);
+int			run_minishell(t_data *data);
+int			process_command(t_data *data);
+void		ft_close_pipe(t_data *data);
+void		handle_sigquit_fork(int sig);
+void		handle_sigint_fork(int sig);
+int			ft_builtins_env_fork(t_data *data, t_cmd *lst);
+int			ft_fd_heredoc(t_cmd *lst);
+void		ft_no_execve(t_data *data, t_cmd *lst);
+void		ft_error_exit(t_data *data, t_cmd *lst);
+void		ft_free_all_fork(t_data *data);
+int			ft_exit_prog(t_data *data);
 
 #endif

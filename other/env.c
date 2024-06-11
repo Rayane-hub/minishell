@@ -3,35 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gavairon <gavairon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 15:39:44 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/05/29 16:47:55 by gavairon         ###   ########.fr       */
+/*   Updated: 2024/06/11 11:33:49 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-int	check_len(t_env *mini_env, int choice)
-{
-	int	len;
-	if (choice == 1)
-	{
-		//printf("name : |%s|\n Value : |%s|\n", mini_env->name, mini_env->value);
-		if (mini_env->name && mini_env->value)
-			len = (ft_strlen(mini_env->name) + ft_strlen(mini_env->value) + 2);
-		else
-			len = (ft_strlen(mini_env->name) + 2);
-	}
-	if (choice == 2)
-	{
-		if (mini_env->name && mini_env->value)
-			len = (ft_strlen(mini_env->name) + ft_strlen(mini_env->value) + 4);
-		else
-			len = (ft_strlen(mini_env->name) + 4);
-	}
-	return (len);
-}
 
 char	*line_extractor(t_env *mini_env)
 {
@@ -87,13 +66,14 @@ char	**ft_list_to_tab(t_env *mini_env)
 	len = ft_envsize(tmp);
 	tmp = mini_env;
 	tab = ft_calloc(len + 1, sizeof(char *));
-	//verif malloc
 	if (!tab)
 		return (NULL);
 	while (tmp)
 	{
-		tab[i++] = line_extractor(tmp);
-		//verif malloc
+		tab[i] = line_extractor(tmp);
+		if (tab[i] == NULL)
+			return (free_pipes(tab), NULL);
+		i++;
 		tmp = tmp->next;
 	}
 	tab[i] = NULL;
@@ -141,7 +121,7 @@ char	**ft_list_to_tab_cote(t_env *mini_env)
 	tab = NULL;
 	tmp = mini_env;
 	len = ft_envsize(mini_env);
-	tab = ft_calloc(len, sizeof(char *) + 1);
+	tab = ft_calloc(len + 1, sizeof(char *));
 	if (!tab)
 		return (NULL);
 	while (tmp)

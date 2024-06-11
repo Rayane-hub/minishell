@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_functions_rd.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 14:15:55 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/04 17:59:28 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/11 10:54:54 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,27 +39,45 @@ void	redirecter_positiver(t_data **data)
 		command_positiver((*data)->cmd->redirecter[i++]);
 }
 
+void	go_free(t_data *data)
+{
+	ft_lstclear(&data->cmd);
+	free_pipes(data->var.pipes);
+	free(data->var.rl);
+	if (data->var.mini_env)
+	{
+		free_pipes(data->var.mini_env);
+		data->var.mini_env = NULL;
+	}
+	free(data->var.rl);
+	if (data->var.mini_env)
+	{
+		free_pipes(data->var.mini_env);
+		data->var.mini_env = NULL;
+	}
+}
+
 int	final_parse(t_data *data)
 {
-	t_data *tmp;
+	t_data	*tmp;
 
 	tmp = data;
 	if (node_creator(data) == -1)
-		return (exit_status(data, 1, \
-		"\033[31mMalloc error from [node_creator]\n\033[0m"), -1);
+		return (-1);
 	args_positiver(&data);
 	if (data->cmd->nb_del > 0)
 		delimiter_positiver(&data);
 	if (data->cmd->nb_red > 0)
 	{
-		redirecter_finisher(data);
+		if (redirecter_finisher(data) == -1)
+			return (-1);
 		redirecter_positiver(&data);
 	}
-	ft_printf_struct(tmp->cmd);
 	if (launch_exec(tmp) == -1)
 		return (-1);
 	data->exit_code = 0;
-	ft_lstclear(&data->cmd);
-	free_pipes(data->var.pipes);
+	if (data->cmd->nb_del > 0)
+		unlink(".heredoc");
+	go_free(data);
 	return (0);
 }

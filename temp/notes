@@ -1,0 +1,122 @@
+launch_exec, 3fork, ft_check_access
+
+
+time sleep 4 | sleep 4
+
+cat | cat | ls
+
+< f1 cat > f2
+
+cat f1 | cat << eof << a | cat -e | ls > f1
+
+cat f1 | cat f1 | cat f1
+
+ls | ls | ls | ls | ls | ls | ls | ls | ls | ls | ls | ls | ls | ls | ls | ls | ls | ls | ls 
+
+-----------------------RESOLVED----------------------------------------- 223
+
+[EXIT] -------> 473 voir ceux non resolved
+
+ls | <f1 cat printf ls au lieu de f1
+
+ctrl \ children QUit core + 131 errno
+
+cat > $HOME minishell: f1: No such file or directory au lieu de ---> bash: /home/rasamad: Is a directory
+
+minishell$> $HOME
+--------------=Command name=--------------
+	Commande -> |/home/rasamad|
+----------------=Arguments=---------------
+-------------=End of command=-------------
+minishell: /home/rasamad: Is a directory
+malloc_consolidate(): invalid chunk size
+fish: Job 1, './minishell' terminated by signal SIGABRT (Abort)
+
+minishell$> exit not exit passe par arg[2] != NULL ?
+minishell$> exit 66 66 passe par arg[2] != NULL mais ne met pas 1 exit_status() ?
+
+minishell$> sleep 5 | sleep 5
+
+minishell$> echo coucou >f1|cat f1 >f2|cat f2 ne met rien dans f2
+~/Documents/minishell$  ls | < dsd | cat print le ls
+
+~/Documents/minishell$ < file1 | ls  ne print pas ls
+
+rasamad@z1r4p5:~/Documents/minishell$ ls / | grep home | wc -l | < file1 > file2 | cat
+print 1 du wc -l au lieu de sarreter a lerreur du < file 1 inexistant
+
+
+--*----------------*-------->> Suprime .heredoc
+
+--------	[211] /!\ SIGNAUX----------------------------------------- 223
+
+
+PDF 399 -- 640 a faire
+
+minishell$> go 
+minishell$> echo $?
+2
+
+
+if (stat(lst->redirecter[i] + j, &statbuf) == -1) <------------ obligatoire ? a quoi sa sert ?
+						;
+if (S_ISDIR(statbuf.st_mode))
+	display_is_dir(lst->args[0])
+
+malloc error que faire ? (free et renvoi un prompt)
+check si tous les malloc sont proteger
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------
+
+
+int	ft_printf_struct(t_cmd *cmd)
+{
+	int	i;
+	
+	i = 0;
+	while (cmd)
+	{
+		printf("\n\n\n\033[33m--------------=Command name=--------------\033[0m\n");
+		printf("	Commande -> |%s|\n", cmd->args[i]);
+		i++;
+		printf("\033[33m----------------=Arguments=---------------\033[0m\n");
+		while (i < cmd->nb_args)
+			{
+				printf("	Arg[%d] -> |%s|\n", i, cmd->args[i]);
+				i++;
+			}
+		i = 0;
+		if (cmd->nb_red > 0)
+		{
+			printf("\033[33m-------------=Redirections=-------------\033[0m\n");
+			while(i < cmd->nb_red)
+			{
+				printf("		Redirecter -> |%s|\n", cmd->redirecter[i]);
+				i++;
+			}
+		}
+		i = 0;
+		if (cmd->heredoc == true)
+		{
+			printf("\033[35m-------------=Heredoc (true)=-------------\033[0m\n");
+			while (i < cmd->nb_del)
+			{
+				printf("		  delimiter -> |%s|\n", cmd->delimiter[i]);
+				i++;
+			}
+		}
+		i = 0;
+		
+
+		printf("\033[35m-------------=End of command=-------------\033[0m\n\n\n");
+		if (cmd->next)
+			cmd = cmd->next;
+		else
+			return (-1);
+	}
+	return (0);
+}

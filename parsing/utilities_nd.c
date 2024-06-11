@@ -3,25 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   utilities_nd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 12:46:02 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/05 13:59:33 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/10 16:54:21 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	path_cmd_free(t_cmd *lst)
+void	ft_lstdelone_nd(t_cmd *lst)
 {
-	if (lst->path_cmd)
-		free(lst->path_cmd);
-}
-
-void	slash_cmd_free(t_cmd *lst)
-{
+	if (lst->redirecter)
+	{
+		free_pipes(lst->redirecter);
+		lst->redirecter = NULL;
+	}
+	if (lst->split_path)
+	{
+		free_pipes(lst->split_path);
+		lst->split_path = NULL;
+	}
 	if (lst->slash_cmd)
+	{
 		free(lst->slash_cmd);
+		lst->slash_cmd = NULL;
+	}
+	if (lst->path_cmd)
+	{
+		free(lst->path_cmd);
+		lst->path_cmd = NULL;
+	}
 }
 
 void	ft_lstdelone(t_cmd *lst)
@@ -38,31 +50,7 @@ void	ft_lstdelone(t_cmd *lst)
 			free_pipes(lst->delimiter);
 			lst->delimiter = NULL;
 		}
-		if (lst->redirecter)
-		{
-			free_pipes(lst->redirecter);
-			lst->redirecter = NULL;
-		}
-		if (lst->split_path)
-		{
-			free_pipes(lst->split_path);
-			lst->split_path = NULL;
-		}
-		if (lst->heredoc_content)
-		{
-			//free(lst->heredoc_content);
-			lst->heredoc_content = NULL;
-		}
-		if (lst->slash_cmd)
-		{
-			free(lst->slash_cmd);
-			lst->slash_cmd = NULL;
-		}
-		if (lst->path_cmd)
-		{
-			free(lst->path_cmd);
-			lst->path_cmd = NULL;
-		}
+		ft_lstdelone_nd(lst);
 		free(lst);
 	}
 }
