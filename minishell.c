@@ -6,61 +6,66 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 11:02:31 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/11 19:25:57 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:14:15 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/minishell.h"
 
-// Définition de la variable globale
-volatile sig_atomic_t g_sig = 0;
+volatile sig_atomic_t	g_sig = 0;
 
 int	ft_check_num(t_data *data)
 {
 	int	i;
-	//not + ou not - ou not inverse de compris entre 0 et 9
+
 	if (data->cmd->args[1][0] != '+' && data->cmd->args[1][0] != '-' && \
 	(!(data->cmd->args[1][0] >= '0' && data->cmd->args[1][0] <= '9')))
-		return(-1);
+		return (-1);
 	if (data->cmd->args[1][0] == '+' \
 	&& (!(data->cmd->args[1][1] >= '0' && data->cmd->args[1][1] <= '9')))
-		return(-1);	// just +
+		return (-1);
 	else if (data->cmd->args[1][0] == '-' && \
 	(!(data->cmd->args[1][1] >= '0' && data->cmd->args[1][1] <= '9')))
-		return(-1);	// just -
+		return (-1);
 	i = 1;
-	while(data->cmd->args[1][i])
+	while (data->cmd->args[1][i])
 	{
 		if ((!(data->cmd->args[1][i] >= '0' && data->cmd->args[1][i] <= '9')))
-			return(-1);
+			return (-1);
 		i++;
 	}
 	return (0);
 }
 
-int	ft_exit_prog(t_data *data)
+void	clear_exit(t_data *data)
 {
-	int exit_stat = 0;
-	printf("exit\n");
-	if (data->cmd->args[1] && ft_check_num(data) == -1)
-	{
-		printf("minishell: exit: %s: numeric argument required\n", data->cmd->args[1]);
-		ft_lstclear(&data->cmd);
-		free_pipes(data->var.pipes);
-		free_pipes(data->var.mini_env);
-		free_env(data->mini_env);
-		rl_clear_history();
-		exit(2);
-	}
-	if (data->cmd->nb_args > 2)
-		return(exit_status(data, 1, "minishell: exit: too many arguments\n"), -1);
-	if (data->cmd->args[1])
-		exit_stat = ft_atoi(data->cmd->args[1]) % 256; // Convert argument to exit status
 	ft_lstclear(&data->cmd);
 	free_pipes(data->var.pipes);
 	free_pipes(data->var.mini_env);
 	free_env(data->mini_env);
 	rl_clear_history();
+}
+
+int	ft_exit_prog(t_data *data)
+{
+	int	exit_stat;
+
+	exit_stat = 0;
+	printf("exit\n");
+	if (data->cmd->args[1] && ft_check_num(data) == -1)
+	{
+		printf("minishell: exit: %s: numeric argument required\n", \
+		data->cmd->args[1]);
+		ft_lstclear(&data->cmd);
+		clear_exit(data);
+		exit(2);
+	}
+	if (data->cmd->nb_args > 2)
+		return (exit_status(data, 1, \
+		"minishell: exit: too many arguments\n"), -1);
+	if (data->cmd->args[1])
+		exit_stat = ft_atoi(data->cmd->args[1]) % 256;
+	clear_exit(data);
 	exit(exit_stat);
 	return (0);
 }

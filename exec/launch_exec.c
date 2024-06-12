@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 19:20:30 by rasamad           #+#    #+#             */
-/*   Updated: 2024/06/11 19:35:27 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/11 22:07:33 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	ft_stat_check(int check_access, t_data *data, t_cmd *lst)
 {
 	struct stat	statbuf;
 
-	if (check_access == -2)
+	if (check_access == -1)
 		return (-1);
 	if (!lst->args[0])
 		return (0);
@@ -70,8 +70,8 @@ int	ft_exec_cmd(t_data *data, t_cmd *lst, int len_lst, int i)
 				return (free_all_heredoc(data->cmd), ft_close_pipe(data), -1);
 		if (i == 1)
 		{
-			ft_first_fork(data, lst);
-			close(data->pipe_fd[1]);
+			if (ft_first_fork(data, lst) && data->pipe_fd[1] != -1)
+				close(data->pipe_fd[1]);
 			data->save_pipe = data->pipe_fd[0];
 		}
 		else if (i < len_lst)
@@ -82,10 +82,8 @@ int	ft_exec_cmd(t_data *data, t_cmd *lst, int len_lst, int i)
 			data->save_pipe = data->pipe_fd[0];
 		}
 		else if (i == len_lst)
-		{
-			ft_last_fork(data, lst);
-			close(data->save_pipe);
-		}
+			if (ft_last_fork(data, lst))
+				close(data->save_pipe);
 	}
 	return (0);
 }

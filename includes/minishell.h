@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:07:18 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/11 19:33:54 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:16:26 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,18 +116,15 @@ typedef struct s_int
 t_cmd		*ft_lstnew_minishell(void);
 t_cmd		*ft_lstlast_minishell(t_cmd *lst);
 void		ft_lstadd_back_minishell(t_cmd **lst, t_cmd *new);
-int			ft_lstlen(t_cmd *elem);
+int			ft_lstlen(t_cmd *lst);
 int			ft_redirecter(t_data *data, t_cmd *lst);
 int			ft_check_access(t_data *data, t_cmd *lst);
 pid_t		ft_first_fork(t_data *data, t_cmd *lst);
 pid_t		ft_middle_fork(t_data *data, t_cmd *lst);
 pid_t		ft_last_fork(t_data *data, t_cmd *lst);
-void		display_error_cmd(t_cmd *elem);
+void		display_error_cmd(t_cmd *lst);
 void		display_no_such(char *str);
-void		ft_free_access(t_cmd *elem);
-void		ft_free_token(t_cmd *elem);
-void		ft_free_lst(t_cmd *lst);
-void		ft_close(t_cmd *elem);
+void		ft_close(t_cmd *lst);
 int			rafters_checker(char *rl);
 int			double_pipe_checker(char *rl);
 int			cote_checker(char *rl);
@@ -141,7 +138,7 @@ void		path_cmd_free(t_cmd *lst);
 void		slash_cmd_free(t_cmd *lst);
 void		ft_lstdelone(t_cmd *lst);
 void		ft_lstclear(t_cmd **lst);
-int			ft_lstlen(t_cmd *elem);
+int			ft_lstlen(t_cmd *lst);
 void		command_stocker(char **input, t_cmd **cmd);
 int			args_memory_alloc(char **input, t_cmd **cmd);
 int			memory_alloc(char **input, t_cmd **cmd);
@@ -247,6 +244,11 @@ int			ft_fd_heredoc(t_cmd *lst);
 void		ft_no_execve(t_data *data, t_cmd *lst);
 void		ft_error_exit(t_data *data, t_cmd *lst);
 void		ft_free_all_fork(t_data *data);
+void		del_first(char *line, t_cmd *lst);
 int			ft_exit_prog(t_data *data);
+int			rl_hook_function(void);
+void		ft_close_infile(t_cmd *lst);
+void		ft_close_outfile(t_cmd *lst);
+void		ft_close(t_cmd *lst);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 18:15:31 by rasamad           #+#    #+#             */
-/*   Updated: 2024/06/11 19:16:18 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/11 21:48:26 by rasamad          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ void	ft_error_exit(t_data *data, t_cmd *lst)
 void	ft_no_execve(t_data *data, t_cmd *lst)
 {
 	if (!lst->args[0] || data->exit_code != 0 || \
-	ft_strcmp(lst->args[0], "exit") == 0 || ft_builtins(lst) != 0 || ft_builtins_env_fork(data, lst) != 0)
+	ft_strcmp(lst->args[0], "exit") == 0 || \
+	ft_builtins(lst) != 0 || ft_builtins_env_fork(data, lst) != 0)
 	{
 		ft_free_all_fork(data);
 		exit(0);
@@ -64,7 +65,8 @@ void	ft_first_children(t_data *data, t_cmd *lst)
 		if (ft_fd_heredoc(lst) == -1)
 			ft_error_exit(data, lst);
 		lst->fd_str_rand = open(".heredoc", O_RDONLY);
-		if (lst->fd_str_rand == -1 || dup2(lst->fd_str_rand, STDIN_FILENO) == -1)
+		if (lst->fd_str_rand == -1 || \
+			dup2(lst->fd_str_rand, STDIN_FILENO) == -1)
 			ft_error_exit(data, lst);
 		close(lst->fd_str_rand);
 	}
