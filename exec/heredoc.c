@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 15:49:33 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/12 13:07:33 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/12 15:00:29 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	write_heredoc(t_data *data, t_cmd *lst, int i, char *line)
 			if (line_eof(data, lst, i, &line) == -1)
 				return (-1);
 		if (g_sig)
-			return (exit_status(data, 130, ""), free(line), -1);
+			return (exit_status(data, 130, ""), g_sig = 0, free(line), -1);
 	}
 	free(line);
 	return (0);
@@ -68,7 +68,7 @@ int	loop_heredoc(t_data *data, t_cmd *lst, char *line)
 	{
 		line = readline(">");
 		if (g_sig)
-			return (exit_status(data, 130, ""), free(line), -1);
+			return (exit_status(data, 130, ""), g_sig = 0, free(line), -1);
 		if (line == NULL)
 			if (line_eof(data, lst, i, &line) == -1)
 				return (-1);

@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 11:23:31 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/10 17:06:48 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/11 21:25:53 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ int	env_copyer(t_data **data, char **envp, t_env **mini_env)
 
 	i = 0;
 	if (!envp[i])
-		printf("Info : Minishell has no environment\n");
+		printf("\033[38;5;214mInfo : Minishell has no environment\n\033[0m");
 	else
 	{
 		while (envp[i])

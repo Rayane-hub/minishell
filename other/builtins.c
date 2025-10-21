@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rasamad <rasamad@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 15:32:01 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/11 19:00:22 by rasamad          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:24:18 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,14 @@ int	ft_pwd(void)
 	return (0);
 }
 
+void	ft_echo_helper(int i_print, t_cmd *lst)
+{
+	if (i_print == 1)
+		printf("\n");
+	else if (!lst->args[1])
+		printf("\n");
+}
+
 void	ft_echo(t_cmd *lst)
 {
 	int	i;
@@ -81,24 +89,5 @@ void	ft_echo(t_cmd *lst)
 		if (lst->args[++i])
 			printf(" ");
 	}
-	if (i_print == 1)
-		printf("\n");
-	else if (!lst->args[1])
-		printf("\n");
-}
-
-int	ft_builtins(t_cmd *lst)
-{
-	if (ft_strcmp(lst->args[0], "pwd") == 0)
-	{
-		if (ft_pwd() == -1)
-		{
-			perror("getcwd");
-			exit(EXIT_FAILURE);
-		}
-		return (1);
-	}
-	else if (ft_strcmp(lst->args[0], "echo") == 0)
-		return (ft_echo(lst), 1);
-	return (0);
+	ft_echo_helper(i_print, lst);
 }

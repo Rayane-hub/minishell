@@ -1,0 +1,16 @@
+total 112
+drwxr-xr-x  8 rasamad 2023_lyon   210 Oct 21 19:22 .
+drwxr-xr-x 12 rasamad 2023_lyon   172 Oct 21 19:20 ..
+drwxr-xr-x  2 rasamad 2023_lyon  4096 Oct 21 19:21 exec
+-rwxr-xr-x  1 rasamad 2023_lyon     0 Oct 21 19:22 f1
+drwxr-xr-x  8 rasamad 2023_lyon   163 Oct 21 19:20 .git
+drwxr-xr-x  2 rasamad 2023_lyon    25 Oct 21 19:20 includes
+drwxr-xr-x  2 rasamad 2023_lyon  4096 Oct 21 19:21 libft
+-rw-r--r--  1 rasamad 2023_lyon  1471 Oct 21 19:20 main_helper.c
+-rw-r--r--  1 rasamad 2023_lyon  2320 Oct 21 19:21 main_helper.o
+-rw-r--r--  1 rasamad 2023_lyon  2418 Oct 21 19:20 Makefile
+-rwxr-xr-x  1 rasamad 2023_lyon 76728 Oct 21 19:21 minishell
+-rw-r--r--  1 rasamad 2023_lyon  2412 Oct 21 19:20 minishell.c
+-rw-r--r--  1 rasamad 2023_lyon  3888 Oct 21 19:21 minishell.o
+drwxr-xr-x  2 rasamad 2023_lyon  4096 Oct 21 19:21 other
+drwxr-xr-x  6 rasamad 2023_lyon   311 Oct 21 19:21 parsing
