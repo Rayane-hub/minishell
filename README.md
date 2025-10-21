@@ -66,6 +66,4 @@ Hello World
 ## 📸 Aperçu visuel
 
 L’image ci-dessous montre l’exécution du shell, la compilation avec `make re`, et l’affichage du répertoire via les commandes internes et externes.  
-<img width="3819" height="1896" alt="Screenshot from 2025-10-21 19-25-23" src="https://github.com/user-attachments/assets/0fd1a766-130b-447b-916c-6c50393f2d54" />
-
 
